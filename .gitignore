@@ -1,0 +1,9 @@
+# Root ignores for Antigravity Workspace
+.gemini
+.vscode/
+
+# Ignore sqlite globally
+*.sqlite
+*.sqlite-journal
+*.db
+*.db-journal
