@@ -77,7 +77,12 @@ export default function Records() {
   // Prepare select options (React-Select uses { value, label } arrays)
   const deptOptions = [...new Set(employees.map(e => e.department).filter(Boolean))].sort().map(d => ({ value: d, label: d }));
   const posOptions = [...new Set(employees.map(e => e.position).filter(Boolean))].sort().map(p => ({ value: p, label: p }));
-  const nameOptions = [...new Set(records.map(r => r.employeeName).filter(Boolean))].sort().map(n => ({ value: n, label: n }));
+  
+  // Names: combine employees from DB + names from scraped records so ALL appear
+  const allNames = new Set();
+  employees.forEach(e => allNames.add(`${e.firstName} ${e.lastName}`));
+  records.forEach(r => { if (r.employeeName) allNames.add(r.employeeName); });
+  const nameOptions = [...allNames].sort().map(n => ({ value: n, label: n }));
 
   // Glassmorphic React-Select Custom Styles
   const customStyles = {

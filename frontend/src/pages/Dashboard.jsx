@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, CheckCircle, Clock, AlertTriangle, Calendar, Database } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import { format, parseISO } from 'date-fns';
-import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
 export default function Dashboard() {
   const getTodayStr = () => {
@@ -11,9 +9,6 @@ export default function Dashboard() {
     return format(today, 'yyyy-MM-dd');
   };
 
-  const handleDateChange = (date, setter) => {
-    setter(date ? format(date, "yyyy-MM-dd") : "");
-  };
 
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState(null);
@@ -115,14 +110,14 @@ export default function Dashboard() {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ position: 'relative', flex: 1 }} className="custom-datepicker-container">
-              <Calendar size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 10 }} />
-              <DatePicker 
-                selected={syncDate ? parseISO(syncDate) : null}
-                onChange={(date) => handleDateChange(date, setSyncDate)}
-                dateFormat="dd.MM.yyyy"
-                className="input-glass pl-10"
-                placeholderText="Datum"
+            <div style={{ position: 'relative', flex: 1 }}>
+              <Calendar size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 10, pointerEvents: 'none' }} />
+              <input 
+                type="date"
+                value={syncDate}
+                onChange={(e) => setSyncDate(e.target.value)}
+                className="input-glass"
+                style={{ paddingLeft: '2.5rem', width: '100%', colorScheme: 'dark' }}
               />
             </div>
             <button className="btn-primary" onClick={handleManualSync} disabled={syncing || massiveSyncing} style={{ padding: '0.75rem 1.5rem', whiteSpace: 'nowrap' }}>
@@ -154,20 +149,22 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Od (Početak)</label>
-              <DatePicker 
-                selected={massiveStartDate ? parseISO(massiveStartDate) : null}
-                onChange={(date) => handleDateChange(date, setMassiveStartDate)}
-                dateFormat="dd.MM.yyyy"
+              <input 
+                type="date"
+                value={massiveStartDate}
+                onChange={(e) => setMassiveStartDate(e.target.value)}
                 className="input-glass"
+                style={{ width: '100%', colorScheme: 'dark' }}
               />
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Do (Kraj)</label>
-              <DatePicker 
-                selected={massiveEndDate ? parseISO(massiveEndDate) : null}
-                onChange={(date) => handleDateChange(date, setMassiveEndDate)}
-                dateFormat="dd.MM.yyyy"
+              <input 
+                type="date"
+                value={massiveEndDate}
+                onChange={(e) => setMassiveEndDate(e.target.value)}
                 className="input-glass"
+                style={{ width: '100%', colorScheme: 'dark' }}
               />
             </div>
             <button className="btn-primary" onClick={handleMassiveSync} disabled={massiveSyncing || syncing} style={{ padding: '0.75rem 1.5rem', whiteSpace: 'nowrap' }}>

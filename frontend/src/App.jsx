@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Records from './pages/Records';
 import Reports from './pages/Reports';
+import Shifts from './pages/Shifts';
 import Settings from './pages/Settings';
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/employees" element={<Employees />} />
+          <Route path="/shifts" element={<Shifts />} />
           <Route path="/records" element={<Records />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />

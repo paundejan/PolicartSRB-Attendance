@@ -39,3 +39,25 @@ model Employee {
   email      String?  @unique
   createdAt  DateTime @default(now())
 }
+
+model Shift {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  startTime     String // format "HH:mm"
+  endTime       String // format "HH:mm"
+  isOvernight   Boolean  @default(false)
+  maxBreakMins  Int      @default(30)
+  toleranceMins Int      @default(15)
+  color         String   @default("#3b82f6") // fallback badge color
+  createdAt     DateTime @default(now())
+}
+
+model OvertimeApproval {
+  id           Int      @id @default(autoincrement())
+  employeeName String
+  date         String // YYYY-MM-DD
+  approved     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@unique([employeeName, date])
+}

@@ -116,6 +116,26 @@ exports.Prisma.EmployeeScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ShiftScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  isOvernight: 'isOvernight',
+  maxBreakMins: 'maxBreakMins',
+  toleranceMins: 'toleranceMins',
+  color: 'color',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.OvertimeApprovalScalarFieldEnum = {
+  id: 'id',
+  employeeName: 'employeeName',
+  date: 'date',
+  approved: 'approved',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -130,7 +150,9 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   AttendanceRecord: 'AttendanceRecord',
   Settings: 'Settings',
-  Employee: 'Employee'
+  Employee: 'Employee',
+  Shift: 'Shift',
+  OvertimeApproval: 'OvertimeApproval'
 };
 /**
  * Create the Client
@@ -180,13 +202,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel AttendanceRecord {\n  id           Int    @id @default(autoincrement())\n  date         String // YYYY-MM-DD format\n  eventType    String // e.g., \"Entry\", \"Exit\", \"Break Start\", \"Break End\"\n  timestamp    String // Exact time, could be ISO or simple HH:mm\n  employeeName String // Name of the scraped employee\n\n  createdAt DateTime @default(now())\n\n  @@unique([employeeName, date, eventType, timestamp])\n}\n\nmodel Settings {\n  id    Int    @id @default(autoincrement())\n  key   String @unique\n  value String\n}\n\nmodel Employee {\n  id         Int      @id @default(autoincrement())\n  employeeId String?  @unique\n  firstName  String\n  lastName   String\n  department String?\n  position   String?\n  email      String?  @unique\n  createdAt  DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "3734dd83a8a79822698662efd928dd9ea53eefc6376f009ef59c5768020ebd7e",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel AttendanceRecord {\n  id           Int    @id @default(autoincrement())\n  date         String // YYYY-MM-DD format\n  eventType    String // e.g., \"Entry\", \"Exit\", \"Break Start\", \"Break End\"\n  timestamp    String // Exact time, could be ISO or simple HH:mm\n  employeeName String // Name of the scraped employee\n\n  createdAt DateTime @default(now())\n\n  @@unique([employeeName, date, eventType, timestamp])\n}\n\nmodel Settings {\n  id    Int    @id @default(autoincrement())\n  key   String @unique\n  value String\n}\n\nmodel Employee {\n  id         Int      @id @default(autoincrement())\n  employeeId String?  @unique\n  firstName  String\n  lastName   String\n  department String?\n  position   String?\n  email      String?  @unique\n  createdAt  DateTime @default(now())\n}\n\nmodel Shift {\n  id            Int      @id @default(autoincrement())\n  name          String   @unique\n  startTime     String // format \"HH:mm\"\n  endTime       String // format \"HH:mm\"\n  isOvernight   Boolean  @default(false)\n  maxBreakMins  Int      @default(30)\n  toleranceMins Int      @default(15)\n  color         String   @default(\"#3b82f6\") // fallback badge color\n  createdAt     DateTime @default(now())\n}\n\nmodel OvertimeApproval {\n  id           Int      @id @default(autoincrement())\n  employeeName String\n  date         String // YYYY-MM-DD\n  approved     Boolean  @default(false)\n  createdAt    DateTime @default(now())\n\n  @@unique([employeeName, date])\n}\n",
+  "inlineSchemaHash": "e096e30d4ef24f3afca731a662fd654d607e810b6f7a081350e2c06acdef3812",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"AttendanceRecord\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"eventType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"employeeName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Settings\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"key\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Employee\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"employeeId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"AttendanceRecord\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"eventType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"employeeName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Settings\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"key\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Employee\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"employeeId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"department\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Shift\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isOvernight\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"maxBreakMins\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"toleranceMins\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"OvertimeApproval\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"employeeName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"approved\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

@@ -28,6 +28,16 @@ export type Settings = $Result.DefaultSelection<Prisma.$SettingsPayload>
  * 
  */
 export type Employee = $Result.DefaultSelection<Prisma.$EmployeePayload>
+/**
+ * Model Shift
+ * 
+ */
+export type Shift = $Result.DefaultSelection<Prisma.$ShiftPayload>
+/**
+ * Model OvertimeApproval
+ * 
+ */
+export type OvertimeApproval = $Result.DefaultSelection<Prisma.$OvertimeApprovalPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -176,6 +186,26 @@ export class PrismaClient<
     * ```
     */
   get employee(): Prisma.EmployeeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.shift`: Exposes CRUD operations for the **Shift** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Shifts
+    * const shifts = await prisma.shift.findMany()
+    * ```
+    */
+  get shift(): Prisma.ShiftDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.overtimeApproval`: Exposes CRUD operations for the **OvertimeApproval** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OvertimeApprovals
+    * const overtimeApprovals = await prisma.overtimeApproval.findMany()
+    * ```
+    */
+  get overtimeApproval(): Prisma.OvertimeApprovalDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -619,7 +649,9 @@ export namespace Prisma {
   export const ModelName: {
     AttendanceRecord: 'AttendanceRecord',
     Settings: 'Settings',
-    Employee: 'Employee'
+    Employee: 'Employee',
+    Shift: 'Shift',
+    OvertimeApproval: 'OvertimeApproval'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -638,7 +670,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "attendanceRecord" | "settings" | "employee"
+      modelProps: "attendanceRecord" | "settings" | "employee" | "shift" | "overtimeApproval"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -864,6 +896,154 @@ export namespace Prisma {
           }
         }
       }
+      Shift: {
+        payload: Prisma.$ShiftPayload<ExtArgs>
+        fields: Prisma.ShiftFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ShiftFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ShiftFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          findFirst: {
+            args: Prisma.ShiftFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ShiftFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          findMany: {
+            args: Prisma.ShiftFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+          }
+          create: {
+            args: Prisma.ShiftCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          createMany: {
+            args: Prisma.ShiftCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ShiftCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+          }
+          delete: {
+            args: Prisma.ShiftDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          update: {
+            args: Prisma.ShiftUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          deleteMany: {
+            args: Prisma.ShiftDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ShiftUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ShiftUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+          }
+          upsert: {
+            args: Prisma.ShiftUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShiftPayload>
+          }
+          aggregate: {
+            args: Prisma.ShiftAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShift>
+          }
+          groupBy: {
+            args: Prisma.ShiftGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ShiftGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ShiftCountArgs<ExtArgs>
+            result: $Utils.Optional<ShiftCountAggregateOutputType> | number
+          }
+        }
+      }
+      OvertimeApproval: {
+        payload: Prisma.$OvertimeApprovalPayload<ExtArgs>
+        fields: Prisma.OvertimeApprovalFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OvertimeApprovalFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OvertimeApprovalFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          findFirst: {
+            args: Prisma.OvertimeApprovalFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OvertimeApprovalFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          findMany: {
+            args: Prisma.OvertimeApprovalFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>[]
+          }
+          create: {
+            args: Prisma.OvertimeApprovalCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          createMany: {
+            args: Prisma.OvertimeApprovalCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OvertimeApprovalCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>[]
+          }
+          delete: {
+            args: Prisma.OvertimeApprovalDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          update: {
+            args: Prisma.OvertimeApprovalUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          deleteMany: {
+            args: Prisma.OvertimeApprovalDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OvertimeApprovalUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OvertimeApprovalUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>[]
+          }
+          upsert: {
+            args: Prisma.OvertimeApprovalUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OvertimeApprovalPayload>
+          }
+          aggregate: {
+            args: Prisma.OvertimeApprovalAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOvertimeApproval>
+          }
+          groupBy: {
+            args: Prisma.OvertimeApprovalGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OvertimeApprovalGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OvertimeApprovalCountArgs<ExtArgs>
+            result: $Utils.Optional<OvertimeApprovalCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -963,6 +1143,8 @@ export namespace Prisma {
     attendanceRecord?: AttendanceRecordOmit
     settings?: SettingsOmit
     employee?: EmployeeOmit
+    shift?: ShiftOmit
+    overtimeApproval?: OvertimeApprovalOmit
   }
 
   /* Types for Logging */
@@ -4151,6 +4333,2120 @@ export namespace Prisma {
 
 
   /**
+   * Model Shift
+   */
+
+  export type AggregateShift = {
+    _count: ShiftCountAggregateOutputType | null
+    _avg: ShiftAvgAggregateOutputType | null
+    _sum: ShiftSumAggregateOutputType | null
+    _min: ShiftMinAggregateOutputType | null
+    _max: ShiftMaxAggregateOutputType | null
+  }
+
+  export type ShiftAvgAggregateOutputType = {
+    id: number | null
+    maxBreakMins: number | null
+    toleranceMins: number | null
+  }
+
+  export type ShiftSumAggregateOutputType = {
+    id: number | null
+    maxBreakMins: number | null
+    toleranceMins: number | null
+  }
+
+  export type ShiftMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    startTime: string | null
+    endTime: string | null
+    isOvernight: boolean | null
+    maxBreakMins: number | null
+    toleranceMins: number | null
+    color: string | null
+    createdAt: Date | null
+  }
+
+  export type ShiftMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    startTime: string | null
+    endTime: string | null
+    isOvernight: boolean | null
+    maxBreakMins: number | null
+    toleranceMins: number | null
+    color: string | null
+    createdAt: Date | null
+  }
+
+  export type ShiftCountAggregateOutputType = {
+    id: number
+    name: number
+    startTime: number
+    endTime: number
+    isOvernight: number
+    maxBreakMins: number
+    toleranceMins: number
+    color: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ShiftAvgAggregateInputType = {
+    id?: true
+    maxBreakMins?: true
+    toleranceMins?: true
+  }
+
+  export type ShiftSumAggregateInputType = {
+    id?: true
+    maxBreakMins?: true
+    toleranceMins?: true
+  }
+
+  export type ShiftMinAggregateInputType = {
+    id?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    isOvernight?: true
+    maxBreakMins?: true
+    toleranceMins?: true
+    color?: true
+    createdAt?: true
+  }
+
+  export type ShiftMaxAggregateInputType = {
+    id?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    isOvernight?: true
+    maxBreakMins?: true
+    toleranceMins?: true
+    color?: true
+    createdAt?: true
+  }
+
+  export type ShiftCountAggregateInputType = {
+    id?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    isOvernight?: true
+    maxBreakMins?: true
+    toleranceMins?: true
+    color?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ShiftAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shift to aggregate.
+     */
+    where?: ShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shifts to fetch.
+     */
+    orderBy?: ShiftOrderByWithRelationInput | ShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Shifts
+    **/
+    _count?: true | ShiftCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ShiftAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ShiftSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ShiftMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ShiftMaxAggregateInputType
+  }
+
+  export type GetShiftAggregateType<T extends ShiftAggregateArgs> = {
+        [P in keyof T & keyof AggregateShift]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShift[P]>
+      : GetScalarType<T[P], AggregateShift[P]>
+  }
+
+
+
+
+  export type ShiftGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShiftWhereInput
+    orderBy?: ShiftOrderByWithAggregationInput | ShiftOrderByWithAggregationInput[]
+    by: ShiftScalarFieldEnum[] | ShiftScalarFieldEnum
+    having?: ShiftScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ShiftCountAggregateInputType | true
+    _avg?: ShiftAvgAggregateInputType
+    _sum?: ShiftSumAggregateInputType
+    _min?: ShiftMinAggregateInputType
+    _max?: ShiftMaxAggregateInputType
+  }
+
+  export type ShiftGroupByOutputType = {
+    id: number
+    name: string
+    startTime: string
+    endTime: string
+    isOvernight: boolean
+    maxBreakMins: number
+    toleranceMins: number
+    color: string
+    createdAt: Date
+    _count: ShiftCountAggregateOutputType | null
+    _avg: ShiftAvgAggregateOutputType | null
+    _sum: ShiftSumAggregateOutputType | null
+    _min: ShiftMinAggregateOutputType | null
+    _max: ShiftMaxAggregateOutputType | null
+  }
+
+  type GetShiftGroupByPayload<T extends ShiftGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ShiftGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ShiftGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ShiftGroupByOutputType[P]>
+            : GetScalarType<T[P], ShiftGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ShiftSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    isOvernight?: boolean
+    maxBreakMins?: boolean
+    toleranceMins?: boolean
+    color?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["shift"]>
+
+  export type ShiftSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    isOvernight?: boolean
+    maxBreakMins?: boolean
+    toleranceMins?: boolean
+    color?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["shift"]>
+
+  export type ShiftSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    isOvernight?: boolean
+    maxBreakMins?: boolean
+    toleranceMins?: boolean
+    color?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["shift"]>
+
+  export type ShiftSelectScalar = {
+    id?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    isOvernight?: boolean
+    maxBreakMins?: boolean
+    toleranceMins?: boolean
+    color?: boolean
+    createdAt?: boolean
+  }
+
+  export type ShiftOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "startTime" | "endTime" | "isOvernight" | "maxBreakMins" | "toleranceMins" | "color" | "createdAt", ExtArgs["result"]["shift"]>
+
+  export type $ShiftPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Shift"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      startTime: string
+      endTime: string
+      isOvernight: boolean
+      maxBreakMins: number
+      toleranceMins: number
+      color: string
+      createdAt: Date
+    }, ExtArgs["result"]["shift"]>
+    composites: {}
+  }
+
+  type ShiftGetPayload<S extends boolean | null | undefined | ShiftDefaultArgs> = $Result.GetResult<Prisma.$ShiftPayload, S>
+
+  type ShiftCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ShiftFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ShiftCountAggregateInputType | true
+    }
+
+  export interface ShiftDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Shift'], meta: { name: 'Shift' } }
+    /**
+     * Find zero or one Shift that matches the filter.
+     * @param {ShiftFindUniqueArgs} args - Arguments to find a Shift
+     * @example
+     * // Get one Shift
+     * const shift = await prisma.shift.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ShiftFindUniqueArgs>(args: SelectSubset<T, ShiftFindUniqueArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Shift that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ShiftFindUniqueOrThrowArgs} args - Arguments to find a Shift
+     * @example
+     * // Get one Shift
+     * const shift = await prisma.shift.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ShiftFindUniqueOrThrowArgs>(args: SelectSubset<T, ShiftFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shift that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftFindFirstArgs} args - Arguments to find a Shift
+     * @example
+     * // Get one Shift
+     * const shift = await prisma.shift.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ShiftFindFirstArgs>(args?: SelectSubset<T, ShiftFindFirstArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shift that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftFindFirstOrThrowArgs} args - Arguments to find a Shift
+     * @example
+     * // Get one Shift
+     * const shift = await prisma.shift.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ShiftFindFirstOrThrowArgs>(args?: SelectSubset<T, ShiftFindFirstOrThrowArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Shifts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Shifts
+     * const shifts = await prisma.shift.findMany()
+     * 
+     * // Get first 10 Shifts
+     * const shifts = await prisma.shift.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shiftWithIdOnly = await prisma.shift.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ShiftFindManyArgs>(args?: SelectSubset<T, ShiftFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Shift.
+     * @param {ShiftCreateArgs} args - Arguments to create a Shift.
+     * @example
+     * // Create one Shift
+     * const Shift = await prisma.shift.create({
+     *   data: {
+     *     // ... data to create a Shift
+     *   }
+     * })
+     * 
+     */
+    create<T extends ShiftCreateArgs>(args: SelectSubset<T, ShiftCreateArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Shifts.
+     * @param {ShiftCreateManyArgs} args - Arguments to create many Shifts.
+     * @example
+     * // Create many Shifts
+     * const shift = await prisma.shift.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ShiftCreateManyArgs>(args?: SelectSubset<T, ShiftCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Shifts and returns the data saved in the database.
+     * @param {ShiftCreateManyAndReturnArgs} args - Arguments to create many Shifts.
+     * @example
+     * // Create many Shifts
+     * const shift = await prisma.shift.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Shifts and only return the `id`
+     * const shiftWithIdOnly = await prisma.shift.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ShiftCreateManyAndReturnArgs>(args?: SelectSubset<T, ShiftCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Shift.
+     * @param {ShiftDeleteArgs} args - Arguments to delete one Shift.
+     * @example
+     * // Delete one Shift
+     * const Shift = await prisma.shift.delete({
+     *   where: {
+     *     // ... filter to delete one Shift
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ShiftDeleteArgs>(args: SelectSubset<T, ShiftDeleteArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Shift.
+     * @param {ShiftUpdateArgs} args - Arguments to update one Shift.
+     * @example
+     * // Update one Shift
+     * const shift = await prisma.shift.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ShiftUpdateArgs>(args: SelectSubset<T, ShiftUpdateArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Shifts.
+     * @param {ShiftDeleteManyArgs} args - Arguments to filter Shifts to delete.
+     * @example
+     * // Delete a few Shifts
+     * const { count } = await prisma.shift.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ShiftDeleteManyArgs>(args?: SelectSubset<T, ShiftDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shifts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Shifts
+     * const shift = await prisma.shift.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ShiftUpdateManyArgs>(args: SelectSubset<T, ShiftUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shifts and returns the data updated in the database.
+     * @param {ShiftUpdateManyAndReturnArgs} args - Arguments to update many Shifts.
+     * @example
+     * // Update many Shifts
+     * const shift = await prisma.shift.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Shifts and only return the `id`
+     * const shiftWithIdOnly = await prisma.shift.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ShiftUpdateManyAndReturnArgs>(args: SelectSubset<T, ShiftUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Shift.
+     * @param {ShiftUpsertArgs} args - Arguments to update or create a Shift.
+     * @example
+     * // Update or create a Shift
+     * const shift = await prisma.shift.upsert({
+     *   create: {
+     *     // ... data to create a Shift
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Shift we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ShiftUpsertArgs>(args: SelectSubset<T, ShiftUpsertArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Shifts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftCountArgs} args - Arguments to filter Shifts to count.
+     * @example
+     * // Count the number of Shifts
+     * const count = await prisma.shift.count({
+     *   where: {
+     *     // ... the filter for the Shifts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ShiftCountArgs>(
+      args?: Subset<T, ShiftCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ShiftCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Shift.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ShiftAggregateArgs>(args: Subset<T, ShiftAggregateArgs>): Prisma.PrismaPromise<GetShiftAggregateType<T>>
+
+    /**
+     * Group by Shift.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShiftGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ShiftGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ShiftGroupByArgs['orderBy'] }
+        : { orderBy?: ShiftGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ShiftGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShiftGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Shift model
+   */
+  readonly fields: ShiftFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Shift.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ShiftClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Shift model
+   */
+  interface ShiftFieldRefs {
+    readonly id: FieldRef<"Shift", 'Int'>
+    readonly name: FieldRef<"Shift", 'String'>
+    readonly startTime: FieldRef<"Shift", 'String'>
+    readonly endTime: FieldRef<"Shift", 'String'>
+    readonly isOvernight: FieldRef<"Shift", 'Boolean'>
+    readonly maxBreakMins: FieldRef<"Shift", 'Int'>
+    readonly toleranceMins: FieldRef<"Shift", 'Int'>
+    readonly color: FieldRef<"Shift", 'String'>
+    readonly createdAt: FieldRef<"Shift", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Shift findUnique
+   */
+  export type ShiftFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter, which Shift to fetch.
+     */
+    where: ShiftWhereUniqueInput
+  }
+
+  /**
+   * Shift findUniqueOrThrow
+   */
+  export type ShiftFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter, which Shift to fetch.
+     */
+    where: ShiftWhereUniqueInput
+  }
+
+  /**
+   * Shift findFirst
+   */
+  export type ShiftFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter, which Shift to fetch.
+     */
+    where?: ShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shifts to fetch.
+     */
+    orderBy?: ShiftOrderByWithRelationInput | ShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shifts.
+     */
+    cursor?: ShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shifts.
+     */
+    distinct?: ShiftScalarFieldEnum | ShiftScalarFieldEnum[]
+  }
+
+  /**
+   * Shift findFirstOrThrow
+   */
+  export type ShiftFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter, which Shift to fetch.
+     */
+    where?: ShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shifts to fetch.
+     */
+    orderBy?: ShiftOrderByWithRelationInput | ShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shifts.
+     */
+    cursor?: ShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shifts.
+     */
+    distinct?: ShiftScalarFieldEnum | ShiftScalarFieldEnum[]
+  }
+
+  /**
+   * Shift findMany
+   */
+  export type ShiftFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter, which Shifts to fetch.
+     */
+    where?: ShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shifts to fetch.
+     */
+    orderBy?: ShiftOrderByWithRelationInput | ShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Shifts.
+     */
+    cursor?: ShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shifts.
+     */
+    skip?: number
+    distinct?: ShiftScalarFieldEnum | ShiftScalarFieldEnum[]
+  }
+
+  /**
+   * Shift create
+   */
+  export type ShiftCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Shift.
+     */
+    data: XOR<ShiftCreateInput, ShiftUncheckedCreateInput>
+  }
+
+  /**
+   * Shift createMany
+   */
+  export type ShiftCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Shifts.
+     */
+    data: ShiftCreateManyInput | ShiftCreateManyInput[]
+  }
+
+  /**
+   * Shift createManyAndReturn
+   */
+  export type ShiftCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * The data used to create many Shifts.
+     */
+    data: ShiftCreateManyInput | ShiftCreateManyInput[]
+  }
+
+  /**
+   * Shift update
+   */
+  export type ShiftUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Shift.
+     */
+    data: XOR<ShiftUpdateInput, ShiftUncheckedUpdateInput>
+    /**
+     * Choose, which Shift to update.
+     */
+    where: ShiftWhereUniqueInput
+  }
+
+  /**
+   * Shift updateMany
+   */
+  export type ShiftUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Shifts.
+     */
+    data: XOR<ShiftUpdateManyMutationInput, ShiftUncheckedUpdateManyInput>
+    /**
+     * Filter which Shifts to update
+     */
+    where?: ShiftWhereInput
+    /**
+     * Limit how many Shifts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shift updateManyAndReturn
+   */
+  export type ShiftUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * The data used to update Shifts.
+     */
+    data: XOR<ShiftUpdateManyMutationInput, ShiftUncheckedUpdateManyInput>
+    /**
+     * Filter which Shifts to update
+     */
+    where?: ShiftWhereInput
+    /**
+     * Limit how many Shifts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shift upsert
+   */
+  export type ShiftUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Shift to update in case it exists.
+     */
+    where: ShiftWhereUniqueInput
+    /**
+     * In case the Shift found by the `where` argument doesn't exist, create a new Shift with this data.
+     */
+    create: XOR<ShiftCreateInput, ShiftUncheckedCreateInput>
+    /**
+     * In case the Shift was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ShiftUpdateInput, ShiftUncheckedUpdateInput>
+  }
+
+  /**
+   * Shift delete
+   */
+  export type ShiftDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Filter which Shift to delete.
+     */
+    where: ShiftWhereUniqueInput
+  }
+
+  /**
+   * Shift deleteMany
+   */
+  export type ShiftDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shifts to delete
+     */
+    where?: ShiftWhereInput
+    /**
+     * Limit how many Shifts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shift without action
+   */
+  export type ShiftDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OvertimeApproval
+   */
+
+  export type AggregateOvertimeApproval = {
+    _count: OvertimeApprovalCountAggregateOutputType | null
+    _avg: OvertimeApprovalAvgAggregateOutputType | null
+    _sum: OvertimeApprovalSumAggregateOutputType | null
+    _min: OvertimeApprovalMinAggregateOutputType | null
+    _max: OvertimeApprovalMaxAggregateOutputType | null
+  }
+
+  export type OvertimeApprovalAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type OvertimeApprovalSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type OvertimeApprovalMinAggregateOutputType = {
+    id: number | null
+    employeeName: string | null
+    date: string | null
+    approved: boolean | null
+    createdAt: Date | null
+  }
+
+  export type OvertimeApprovalMaxAggregateOutputType = {
+    id: number | null
+    employeeName: string | null
+    date: string | null
+    approved: boolean | null
+    createdAt: Date | null
+  }
+
+  export type OvertimeApprovalCountAggregateOutputType = {
+    id: number
+    employeeName: number
+    date: number
+    approved: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type OvertimeApprovalAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type OvertimeApprovalSumAggregateInputType = {
+    id?: true
+  }
+
+  export type OvertimeApprovalMinAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    approved?: true
+    createdAt?: true
+  }
+
+  export type OvertimeApprovalMaxAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    approved?: true
+    createdAt?: true
+  }
+
+  export type OvertimeApprovalCountAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    approved?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type OvertimeApprovalAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OvertimeApproval to aggregate.
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OvertimeApprovals to fetch.
+     */
+    orderBy?: OvertimeApprovalOrderByWithRelationInput | OvertimeApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OvertimeApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OvertimeApprovals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OvertimeApprovals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OvertimeApprovals
+    **/
+    _count?: true | OvertimeApprovalCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: OvertimeApprovalAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OvertimeApprovalSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OvertimeApprovalMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OvertimeApprovalMaxAggregateInputType
+  }
+
+  export type GetOvertimeApprovalAggregateType<T extends OvertimeApprovalAggregateArgs> = {
+        [P in keyof T & keyof AggregateOvertimeApproval]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOvertimeApproval[P]>
+      : GetScalarType<T[P], AggregateOvertimeApproval[P]>
+  }
+
+
+
+
+  export type OvertimeApprovalGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OvertimeApprovalWhereInput
+    orderBy?: OvertimeApprovalOrderByWithAggregationInput | OvertimeApprovalOrderByWithAggregationInput[]
+    by: OvertimeApprovalScalarFieldEnum[] | OvertimeApprovalScalarFieldEnum
+    having?: OvertimeApprovalScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OvertimeApprovalCountAggregateInputType | true
+    _avg?: OvertimeApprovalAvgAggregateInputType
+    _sum?: OvertimeApprovalSumAggregateInputType
+    _min?: OvertimeApprovalMinAggregateInputType
+    _max?: OvertimeApprovalMaxAggregateInputType
+  }
+
+  export type OvertimeApprovalGroupByOutputType = {
+    id: number
+    employeeName: string
+    date: string
+    approved: boolean
+    createdAt: Date
+    _count: OvertimeApprovalCountAggregateOutputType | null
+    _avg: OvertimeApprovalAvgAggregateOutputType | null
+    _sum: OvertimeApprovalSumAggregateOutputType | null
+    _min: OvertimeApprovalMinAggregateOutputType | null
+    _max: OvertimeApprovalMaxAggregateOutputType | null
+  }
+
+  type GetOvertimeApprovalGroupByPayload<T extends OvertimeApprovalGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OvertimeApprovalGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OvertimeApprovalGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OvertimeApprovalGroupByOutputType[P]>
+            : GetScalarType<T[P], OvertimeApprovalGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OvertimeApprovalSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    approved?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["overtimeApproval"]>
+
+  export type OvertimeApprovalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    approved?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["overtimeApproval"]>
+
+  export type OvertimeApprovalSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    approved?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["overtimeApproval"]>
+
+  export type OvertimeApprovalSelectScalar = {
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    approved?: boolean
+    createdAt?: boolean
+  }
+
+  export type OvertimeApprovalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeName" | "date" | "approved" | "createdAt", ExtArgs["result"]["overtimeApproval"]>
+
+  export type $OvertimeApprovalPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OvertimeApproval"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      employeeName: string
+      date: string
+      approved: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["overtimeApproval"]>
+    composites: {}
+  }
+
+  type OvertimeApprovalGetPayload<S extends boolean | null | undefined | OvertimeApprovalDefaultArgs> = $Result.GetResult<Prisma.$OvertimeApprovalPayload, S>
+
+  type OvertimeApprovalCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OvertimeApprovalFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OvertimeApprovalCountAggregateInputType | true
+    }
+
+  export interface OvertimeApprovalDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OvertimeApproval'], meta: { name: 'OvertimeApproval' } }
+    /**
+     * Find zero or one OvertimeApproval that matches the filter.
+     * @param {OvertimeApprovalFindUniqueArgs} args - Arguments to find a OvertimeApproval
+     * @example
+     * // Get one OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OvertimeApprovalFindUniqueArgs>(args: SelectSubset<T, OvertimeApprovalFindUniqueArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OvertimeApproval that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OvertimeApprovalFindUniqueOrThrowArgs} args - Arguments to find a OvertimeApproval
+     * @example
+     * // Get one OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OvertimeApprovalFindUniqueOrThrowArgs>(args: SelectSubset<T, OvertimeApprovalFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OvertimeApproval that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalFindFirstArgs} args - Arguments to find a OvertimeApproval
+     * @example
+     * // Get one OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OvertimeApprovalFindFirstArgs>(args?: SelectSubset<T, OvertimeApprovalFindFirstArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OvertimeApproval that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalFindFirstOrThrowArgs} args - Arguments to find a OvertimeApproval
+     * @example
+     * // Get one OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OvertimeApprovalFindFirstOrThrowArgs>(args?: SelectSubset<T, OvertimeApprovalFindFirstOrThrowArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OvertimeApprovals that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OvertimeApprovals
+     * const overtimeApprovals = await prisma.overtimeApproval.findMany()
+     * 
+     * // Get first 10 OvertimeApprovals
+     * const overtimeApprovals = await prisma.overtimeApproval.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const overtimeApprovalWithIdOnly = await prisma.overtimeApproval.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OvertimeApprovalFindManyArgs>(args?: SelectSubset<T, OvertimeApprovalFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OvertimeApproval.
+     * @param {OvertimeApprovalCreateArgs} args - Arguments to create a OvertimeApproval.
+     * @example
+     * // Create one OvertimeApproval
+     * const OvertimeApproval = await prisma.overtimeApproval.create({
+     *   data: {
+     *     // ... data to create a OvertimeApproval
+     *   }
+     * })
+     * 
+     */
+    create<T extends OvertimeApprovalCreateArgs>(args: SelectSubset<T, OvertimeApprovalCreateArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OvertimeApprovals.
+     * @param {OvertimeApprovalCreateManyArgs} args - Arguments to create many OvertimeApprovals.
+     * @example
+     * // Create many OvertimeApprovals
+     * const overtimeApproval = await prisma.overtimeApproval.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OvertimeApprovalCreateManyArgs>(args?: SelectSubset<T, OvertimeApprovalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OvertimeApprovals and returns the data saved in the database.
+     * @param {OvertimeApprovalCreateManyAndReturnArgs} args - Arguments to create many OvertimeApprovals.
+     * @example
+     * // Create many OvertimeApprovals
+     * const overtimeApproval = await prisma.overtimeApproval.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OvertimeApprovals and only return the `id`
+     * const overtimeApprovalWithIdOnly = await prisma.overtimeApproval.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OvertimeApprovalCreateManyAndReturnArgs>(args?: SelectSubset<T, OvertimeApprovalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OvertimeApproval.
+     * @param {OvertimeApprovalDeleteArgs} args - Arguments to delete one OvertimeApproval.
+     * @example
+     * // Delete one OvertimeApproval
+     * const OvertimeApproval = await prisma.overtimeApproval.delete({
+     *   where: {
+     *     // ... filter to delete one OvertimeApproval
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OvertimeApprovalDeleteArgs>(args: SelectSubset<T, OvertimeApprovalDeleteArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OvertimeApproval.
+     * @param {OvertimeApprovalUpdateArgs} args - Arguments to update one OvertimeApproval.
+     * @example
+     * // Update one OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OvertimeApprovalUpdateArgs>(args: SelectSubset<T, OvertimeApprovalUpdateArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OvertimeApprovals.
+     * @param {OvertimeApprovalDeleteManyArgs} args - Arguments to filter OvertimeApprovals to delete.
+     * @example
+     * // Delete a few OvertimeApprovals
+     * const { count } = await prisma.overtimeApproval.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OvertimeApprovalDeleteManyArgs>(args?: SelectSubset<T, OvertimeApprovalDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OvertimeApprovals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OvertimeApprovals
+     * const overtimeApproval = await prisma.overtimeApproval.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OvertimeApprovalUpdateManyArgs>(args: SelectSubset<T, OvertimeApprovalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OvertimeApprovals and returns the data updated in the database.
+     * @param {OvertimeApprovalUpdateManyAndReturnArgs} args - Arguments to update many OvertimeApprovals.
+     * @example
+     * // Update many OvertimeApprovals
+     * const overtimeApproval = await prisma.overtimeApproval.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OvertimeApprovals and only return the `id`
+     * const overtimeApprovalWithIdOnly = await prisma.overtimeApproval.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OvertimeApprovalUpdateManyAndReturnArgs>(args: SelectSubset<T, OvertimeApprovalUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OvertimeApproval.
+     * @param {OvertimeApprovalUpsertArgs} args - Arguments to update or create a OvertimeApproval.
+     * @example
+     * // Update or create a OvertimeApproval
+     * const overtimeApproval = await prisma.overtimeApproval.upsert({
+     *   create: {
+     *     // ... data to create a OvertimeApproval
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OvertimeApproval we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OvertimeApprovalUpsertArgs>(args: SelectSubset<T, OvertimeApprovalUpsertArgs<ExtArgs>>): Prisma__OvertimeApprovalClient<$Result.GetResult<Prisma.$OvertimeApprovalPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OvertimeApprovals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalCountArgs} args - Arguments to filter OvertimeApprovals to count.
+     * @example
+     * // Count the number of OvertimeApprovals
+     * const count = await prisma.overtimeApproval.count({
+     *   where: {
+     *     // ... the filter for the OvertimeApprovals we want to count
+     *   }
+     * })
+    **/
+    count<T extends OvertimeApprovalCountArgs>(
+      args?: Subset<T, OvertimeApprovalCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OvertimeApprovalCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OvertimeApproval.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OvertimeApprovalAggregateArgs>(args: Subset<T, OvertimeApprovalAggregateArgs>): Prisma.PrismaPromise<GetOvertimeApprovalAggregateType<T>>
+
+    /**
+     * Group by OvertimeApproval.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OvertimeApprovalGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OvertimeApprovalGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OvertimeApprovalGroupByArgs['orderBy'] }
+        : { orderBy?: OvertimeApprovalGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OvertimeApprovalGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOvertimeApprovalGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OvertimeApproval model
+   */
+  readonly fields: OvertimeApprovalFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OvertimeApproval.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OvertimeApprovalClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OvertimeApproval model
+   */
+  interface OvertimeApprovalFieldRefs {
+    readonly id: FieldRef<"OvertimeApproval", 'Int'>
+    readonly employeeName: FieldRef<"OvertimeApproval", 'String'>
+    readonly date: FieldRef<"OvertimeApproval", 'String'>
+    readonly approved: FieldRef<"OvertimeApproval", 'Boolean'>
+    readonly createdAt: FieldRef<"OvertimeApproval", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OvertimeApproval findUnique
+   */
+  export type OvertimeApprovalFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter, which OvertimeApproval to fetch.
+     */
+    where: OvertimeApprovalWhereUniqueInput
+  }
+
+  /**
+   * OvertimeApproval findUniqueOrThrow
+   */
+  export type OvertimeApprovalFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter, which OvertimeApproval to fetch.
+     */
+    where: OvertimeApprovalWhereUniqueInput
+  }
+
+  /**
+   * OvertimeApproval findFirst
+   */
+  export type OvertimeApprovalFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter, which OvertimeApproval to fetch.
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OvertimeApprovals to fetch.
+     */
+    orderBy?: OvertimeApprovalOrderByWithRelationInput | OvertimeApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OvertimeApprovals.
+     */
+    cursor?: OvertimeApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OvertimeApprovals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OvertimeApprovals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OvertimeApprovals.
+     */
+    distinct?: OvertimeApprovalScalarFieldEnum | OvertimeApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * OvertimeApproval findFirstOrThrow
+   */
+  export type OvertimeApprovalFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter, which OvertimeApproval to fetch.
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OvertimeApprovals to fetch.
+     */
+    orderBy?: OvertimeApprovalOrderByWithRelationInput | OvertimeApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OvertimeApprovals.
+     */
+    cursor?: OvertimeApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OvertimeApprovals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OvertimeApprovals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OvertimeApprovals.
+     */
+    distinct?: OvertimeApprovalScalarFieldEnum | OvertimeApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * OvertimeApproval findMany
+   */
+  export type OvertimeApprovalFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter, which OvertimeApprovals to fetch.
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OvertimeApprovals to fetch.
+     */
+    orderBy?: OvertimeApprovalOrderByWithRelationInput | OvertimeApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OvertimeApprovals.
+     */
+    cursor?: OvertimeApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OvertimeApprovals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OvertimeApprovals.
+     */
+    skip?: number
+    distinct?: OvertimeApprovalScalarFieldEnum | OvertimeApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * OvertimeApproval create
+   */
+  export type OvertimeApprovalCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * The data needed to create a OvertimeApproval.
+     */
+    data: XOR<OvertimeApprovalCreateInput, OvertimeApprovalUncheckedCreateInput>
+  }
+
+  /**
+   * OvertimeApproval createMany
+   */
+  export type OvertimeApprovalCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OvertimeApprovals.
+     */
+    data: OvertimeApprovalCreateManyInput | OvertimeApprovalCreateManyInput[]
+  }
+
+  /**
+   * OvertimeApproval createManyAndReturn
+   */
+  export type OvertimeApprovalCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * The data used to create many OvertimeApprovals.
+     */
+    data: OvertimeApprovalCreateManyInput | OvertimeApprovalCreateManyInput[]
+  }
+
+  /**
+   * OvertimeApproval update
+   */
+  export type OvertimeApprovalUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * The data needed to update a OvertimeApproval.
+     */
+    data: XOR<OvertimeApprovalUpdateInput, OvertimeApprovalUncheckedUpdateInput>
+    /**
+     * Choose, which OvertimeApproval to update.
+     */
+    where: OvertimeApprovalWhereUniqueInput
+  }
+
+  /**
+   * OvertimeApproval updateMany
+   */
+  export type OvertimeApprovalUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OvertimeApprovals.
+     */
+    data: XOR<OvertimeApprovalUpdateManyMutationInput, OvertimeApprovalUncheckedUpdateManyInput>
+    /**
+     * Filter which OvertimeApprovals to update
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * Limit how many OvertimeApprovals to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OvertimeApproval updateManyAndReturn
+   */
+  export type OvertimeApprovalUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * The data used to update OvertimeApprovals.
+     */
+    data: XOR<OvertimeApprovalUpdateManyMutationInput, OvertimeApprovalUncheckedUpdateManyInput>
+    /**
+     * Filter which OvertimeApprovals to update
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * Limit how many OvertimeApprovals to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OvertimeApproval upsert
+   */
+  export type OvertimeApprovalUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * The filter to search for the OvertimeApproval to update in case it exists.
+     */
+    where: OvertimeApprovalWhereUniqueInput
+    /**
+     * In case the OvertimeApproval found by the `where` argument doesn't exist, create a new OvertimeApproval with this data.
+     */
+    create: XOR<OvertimeApprovalCreateInput, OvertimeApprovalUncheckedCreateInput>
+    /**
+     * In case the OvertimeApproval was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OvertimeApprovalUpdateInput, OvertimeApprovalUncheckedUpdateInput>
+  }
+
+  /**
+   * OvertimeApproval delete
+   */
+  export type OvertimeApprovalDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+    /**
+     * Filter which OvertimeApproval to delete.
+     */
+    where: OvertimeApprovalWhereUniqueInput
+  }
+
+  /**
+   * OvertimeApproval deleteMany
+   */
+  export type OvertimeApprovalDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OvertimeApprovals to delete
+     */
+    where?: OvertimeApprovalWhereInput
+    /**
+     * Limit how many OvertimeApprovals to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OvertimeApproval without action
+   */
+  export type OvertimeApprovalDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OvertimeApproval
+     */
+    select?: OvertimeApprovalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OvertimeApproval
+     */
+    omit?: OvertimeApprovalOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4196,6 +6492,32 @@ export namespace Prisma {
   export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
+  export const ShiftScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    isOvernight: 'isOvernight',
+    maxBreakMins: 'maxBreakMins',
+    toleranceMins: 'toleranceMins',
+    color: 'color',
+    createdAt: 'createdAt'
+  };
+
+  export type ShiftScalarFieldEnum = (typeof ShiftScalarFieldEnum)[keyof typeof ShiftScalarFieldEnum]
+
+
+  export const OvertimeApprovalScalarFieldEnum: {
+    id: 'id',
+    employeeName: 'employeeName',
+    date: 'date',
+    approved: 'approved',
+    createdAt: 'createdAt'
+  };
+
+  export type OvertimeApprovalScalarFieldEnum = (typeof OvertimeApprovalScalarFieldEnum)[keyof typeof OvertimeApprovalScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -4235,6 +6557,13 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -4421,6 +6750,135 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
   }
 
+  export type ShiftWhereInput = {
+    AND?: ShiftWhereInput | ShiftWhereInput[]
+    OR?: ShiftWhereInput[]
+    NOT?: ShiftWhereInput | ShiftWhereInput[]
+    id?: IntFilter<"Shift"> | number
+    name?: StringFilter<"Shift"> | string
+    startTime?: StringFilter<"Shift"> | string
+    endTime?: StringFilter<"Shift"> | string
+    isOvernight?: BoolFilter<"Shift"> | boolean
+    maxBreakMins?: IntFilter<"Shift"> | number
+    toleranceMins?: IntFilter<"Shift"> | number
+    color?: StringFilter<"Shift"> | string
+    createdAt?: DateTimeFilter<"Shift"> | Date | string
+  }
+
+  export type ShiftOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    isOvernight?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShiftWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    name?: string
+    AND?: ShiftWhereInput | ShiftWhereInput[]
+    OR?: ShiftWhereInput[]
+    NOT?: ShiftWhereInput | ShiftWhereInput[]
+    startTime?: StringFilter<"Shift"> | string
+    endTime?: StringFilter<"Shift"> | string
+    isOvernight?: BoolFilter<"Shift"> | boolean
+    maxBreakMins?: IntFilter<"Shift"> | number
+    toleranceMins?: IntFilter<"Shift"> | number
+    color?: StringFilter<"Shift"> | string
+    createdAt?: DateTimeFilter<"Shift"> | Date | string
+  }, "id" | "name">
+
+  export type ShiftOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    isOvernight?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+    _count?: ShiftCountOrderByAggregateInput
+    _avg?: ShiftAvgOrderByAggregateInput
+    _max?: ShiftMaxOrderByAggregateInput
+    _min?: ShiftMinOrderByAggregateInput
+    _sum?: ShiftSumOrderByAggregateInput
+  }
+
+  export type ShiftScalarWhereWithAggregatesInput = {
+    AND?: ShiftScalarWhereWithAggregatesInput | ShiftScalarWhereWithAggregatesInput[]
+    OR?: ShiftScalarWhereWithAggregatesInput[]
+    NOT?: ShiftScalarWhereWithAggregatesInput | ShiftScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Shift"> | number
+    name?: StringWithAggregatesFilter<"Shift"> | string
+    startTime?: StringWithAggregatesFilter<"Shift"> | string
+    endTime?: StringWithAggregatesFilter<"Shift"> | string
+    isOvernight?: BoolWithAggregatesFilter<"Shift"> | boolean
+    maxBreakMins?: IntWithAggregatesFilter<"Shift"> | number
+    toleranceMins?: IntWithAggregatesFilter<"Shift"> | number
+    color?: StringWithAggregatesFilter<"Shift"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Shift"> | Date | string
+  }
+
+  export type OvertimeApprovalWhereInput = {
+    AND?: OvertimeApprovalWhereInput | OvertimeApprovalWhereInput[]
+    OR?: OvertimeApprovalWhereInput[]
+    NOT?: OvertimeApprovalWhereInput | OvertimeApprovalWhereInput[]
+    id?: IntFilter<"OvertimeApproval"> | number
+    employeeName?: StringFilter<"OvertimeApproval"> | string
+    date?: StringFilter<"OvertimeApproval"> | string
+    approved?: BoolFilter<"OvertimeApproval"> | boolean
+    createdAt?: DateTimeFilter<"OvertimeApproval"> | Date | string
+  }
+
+  export type OvertimeApprovalOrderByWithRelationInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    approved?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OvertimeApprovalWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    employeeName_date?: OvertimeApprovalEmployeeNameDateCompoundUniqueInput
+    AND?: OvertimeApprovalWhereInput | OvertimeApprovalWhereInput[]
+    OR?: OvertimeApprovalWhereInput[]
+    NOT?: OvertimeApprovalWhereInput | OvertimeApprovalWhereInput[]
+    employeeName?: StringFilter<"OvertimeApproval"> | string
+    date?: StringFilter<"OvertimeApproval"> | string
+    approved?: BoolFilter<"OvertimeApproval"> | boolean
+    createdAt?: DateTimeFilter<"OvertimeApproval"> | Date | string
+  }, "id" | "employeeName_date">
+
+  export type OvertimeApprovalOrderByWithAggregationInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    approved?: SortOrder
+    createdAt?: SortOrder
+    _count?: OvertimeApprovalCountOrderByAggregateInput
+    _avg?: OvertimeApprovalAvgOrderByAggregateInput
+    _max?: OvertimeApprovalMaxOrderByAggregateInput
+    _min?: OvertimeApprovalMinOrderByAggregateInput
+    _sum?: OvertimeApprovalSumOrderByAggregateInput
+  }
+
+  export type OvertimeApprovalScalarWhereWithAggregatesInput = {
+    AND?: OvertimeApprovalScalarWhereWithAggregatesInput | OvertimeApprovalScalarWhereWithAggregatesInput[]
+    OR?: OvertimeApprovalScalarWhereWithAggregatesInput[]
+    NOT?: OvertimeApprovalScalarWhereWithAggregatesInput | OvertimeApprovalScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"OvertimeApproval"> | number
+    employeeName?: StringWithAggregatesFilter<"OvertimeApproval"> | string
+    date?: StringWithAggregatesFilter<"OvertimeApproval"> | string
+    approved?: BoolWithAggregatesFilter<"OvertimeApproval"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"OvertimeApproval"> | Date | string
+  }
+
   export type AttendanceRecordCreateInput = {
     date: string
     eventType: string
@@ -4591,6 +7049,140 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     position?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShiftCreateInput = {
+    name: string
+    startTime: string
+    endTime: string
+    isOvernight?: boolean
+    maxBreakMins?: number
+    toleranceMins?: number
+    color?: string
+    createdAt?: Date | string
+  }
+
+  export type ShiftUncheckedCreateInput = {
+    id?: number
+    name: string
+    startTime: string
+    endTime: string
+    isOvernight?: boolean
+    maxBreakMins?: number
+    toleranceMins?: number
+    color?: string
+    createdAt?: Date | string
+  }
+
+  export type ShiftUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    isOvernight?: BoolFieldUpdateOperationsInput | boolean
+    maxBreakMins?: IntFieldUpdateOperationsInput | number
+    toleranceMins?: IntFieldUpdateOperationsInput | number
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShiftUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    isOvernight?: BoolFieldUpdateOperationsInput | boolean
+    maxBreakMins?: IntFieldUpdateOperationsInput | number
+    toleranceMins?: IntFieldUpdateOperationsInput | number
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShiftCreateManyInput = {
+    id?: number
+    name: string
+    startTime: string
+    endTime: string
+    isOvernight?: boolean
+    maxBreakMins?: number
+    toleranceMins?: number
+    color?: string
+    createdAt?: Date | string
+  }
+
+  export type ShiftUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    isOvernight?: BoolFieldUpdateOperationsInput | boolean
+    maxBreakMins?: IntFieldUpdateOperationsInput | number
+    toleranceMins?: IntFieldUpdateOperationsInput | number
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShiftUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    isOvernight?: BoolFieldUpdateOperationsInput | boolean
+    maxBreakMins?: IntFieldUpdateOperationsInput | number
+    toleranceMins?: IntFieldUpdateOperationsInput | number
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OvertimeApprovalCreateInput = {
+    employeeName: string
+    date: string
+    approved?: boolean
+    createdAt?: Date | string
+  }
+
+  export type OvertimeApprovalUncheckedCreateInput = {
+    id?: number
+    employeeName: string
+    date: string
+    approved?: boolean
+    createdAt?: Date | string
+  }
+
+  export type OvertimeApprovalUpdateInput = {
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OvertimeApprovalUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OvertimeApprovalCreateManyInput = {
+    id?: number
+    employeeName: string
+    date: string
+    approved?: boolean
+    createdAt?: Date | string
+  }
+
+  export type OvertimeApprovalUpdateManyMutationInput = {
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    approved?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OvertimeApprovalUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    approved?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4822,6 +7414,104 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type ShiftCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    isOvernight?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShiftAvgOrderByAggregateInput = {
+    id?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+  }
+
+  export type ShiftMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    isOvernight?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShiftMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    isOvernight?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShiftSumOrderByAggregateInput = {
+    id?: SortOrder
+    maxBreakMins?: SortOrder
+    toleranceMins?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type OvertimeApprovalEmployeeNameDateCompoundUniqueInput = {
+    employeeName: string
+    date: string
+  }
+
+  export type OvertimeApprovalCountOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    approved?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OvertimeApprovalAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type OvertimeApprovalMaxOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    approved?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OvertimeApprovalMinOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    approved?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OvertimeApprovalSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -4840,6 +7530,10 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -4976,6 +7670,19 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
 

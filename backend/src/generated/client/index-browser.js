@@ -144,6 +144,26 @@ exports.Prisma.EmployeeScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ShiftScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  isOvernight: 'isOvernight',
+  maxBreakMins: 'maxBreakMins',
+  toleranceMins: 'toleranceMins',
+  color: 'color',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.OvertimeApprovalScalarFieldEnum = {
+  id: 'id',
+  employeeName: 'employeeName',
+  date: 'date',
+  approved: 'approved',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -158,7 +178,9 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   AttendanceRecord: 'AttendanceRecord',
   Settings: 'Settings',
-  Employee: 'Employee'
+  Employee: 'Employee',
+  Shift: 'Shift',
+  OvertimeApproval: 'OvertimeApproval'
 };
 
 /**

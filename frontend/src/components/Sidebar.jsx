@@ -1,15 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, TableProperties, BarChart3, Settings, Users } from 'lucide-react';
+import { LayoutDashboard, TableProperties, BarChart3, Settings, Users, Clock } from 'lucide-react';
 import './Sidebar.css';
 
 export default function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
-    { name: 'Employees', path: '/employees', icon: <Users size={20} /> },
-    { name: 'Records', path: '/records', icon: <TableProperties size={20} /> },
-    { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
-    { name: 'Settings', path: '/settings', icon: <Settings size={20} /> },
+    { name: 'Zaposleni', path: '/employees', icon: <Users size={20} /> },
+    { name: 'Smene', path: '/shifts', icon: <Clock size={20} /> },
+    { name: 'Evidencija', path: '/records', icon: <TableProperties size={20} /> },
+    { name: 'Izveštaji', path: '/reports', icon: <BarChart3 size={20} /> },
+    { name: 'Podešavanja', path: '/settings', icon: <Settings size={20} /> },
   ];
 
   return (
