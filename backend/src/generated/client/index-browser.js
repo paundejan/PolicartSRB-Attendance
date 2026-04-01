@@ -164,6 +164,15 @@ exports.Prisma.OvertimeApprovalScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.LeaveRecordScalarFieldEnum = {
+  id: 'id',
+  employeeName: 'employeeName',
+  date: 'date',
+  leaveType: 'leaveType',
+  note: 'note',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -180,7 +189,8 @@ exports.Prisma.ModelName = {
   Settings: 'Settings',
   Employee: 'Employee',
   Shift: 'Shift',
-  OvertimeApproval: 'OvertimeApproval'
+  OvertimeApproval: 'OvertimeApproval',
+  LeaveRecord: 'LeaveRecord'
 };
 
 /**

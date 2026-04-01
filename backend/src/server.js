@@ -53,8 +53,8 @@ app.post('/api/sync/massive', async (req, res) => {
         }
         
         const datesArray = [];
-        let currentDate = new Date(startDate);
-        const end = new Date(endDate);
+        let currentDate = new Date(startDate + 'T12:00:00');
+        const end = new Date(endDate + 'T12:00:00');
         
         if (currentDate > end) {
             return res.status(400).json({ success: false, error: "Početni datum ne može biti veći od krajnjeg." });
@@ -62,7 +62,7 @@ app.post('/api/sync/massive', async (req, res) => {
         
         let days = 0;
         while (currentDate <= end && days < 31) {
-            datesArray.push(currentDate.toISOString().split('T')[0]);
+            datesArray.push(toLocalDateStr(currentDate));
             currentDate.setDate(currentDate.getDate() + 1);
             days++;
         }
@@ -299,6 +299,14 @@ function toMinutes(timeStr) {
     return parseInt(parts[0]) * 60 + parseInt(parts[1]);
 }
 
+// Helper: format Date to YYYY-MM-DD using LOCAL time (avoids UTC timezone shift)
+function toLocalDateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
 // API: Weekly Report — matches employees to shifts, handles overnight, calculates overtime
 app.get('/api/reports/weekly', async (req, res) => {
     try {
@@ -307,11 +315,11 @@ app.get('/api/reports/weekly', async (req, res) => {
 
         // Build 7-day range + 1 extra day for overnight exit lookups
         const dates = [];
-        const start = new Date(weekStart);
+        const start = new Date(weekStart + 'T12:00:00');
         for (let i = 0; i < 8; i++) { // 8 days to catch next-day exits
             const d = new Date(start);
             d.setDate(d.getDate() + i);
-            dates.push(d.toISOString().split('T')[0]);
+            dates.push(toLocalDateStr(d));
         }
         const reportDates = dates.slice(0, 7); // only show 7 days
 
@@ -331,6 +339,13 @@ app.get('/api/reports/weekly', async (req, res) => {
         const approvalMap = {};
         approvals.forEach(a => { approvalMap[`${a.employeeName}||${a.date}`] = a.approved; });
 
+        // Fetch leave records for this week
+        const leaveRecords = await prisma.leaveRecord.findMany({
+            where: { date: { in: reportDates } }
+        });
+        const leaveMap = {}; // "name||date" -> leaveType
+        leaveRecords.forEach(lr => { leaveMap[`${lr.employeeName}||${lr.date}`] = lr.leaveType; });
+
         // Group records by employeeName + date
         const grouped = {};
         for (const rec of records) {
@@ -341,19 +356,51 @@ app.get('/api/reports/weekly', async (req, res) => {
         }
 
         // ============================================================
-        // PURELY TIME-BASED overnight detection (no shift definitions)
+        // ITERATIVE TIME-BASED overnight detection
+        // Key insight: a date is "overnight start" ONLY if the FIRST
+        // entry (after filtering consumed mornings) is >= 18:00.
+        // If first entry is afternoon (e.g. 13:32), evening entries
+        // are just break re-entries of the SAME shift (e.g. Druga Smena).
         // ============================================================
 
-        // Step 1: Build a set of employee+dates that have an evening entry (>= 18:00)
-        const hasEveningEntry = new Set(); // "name||date"
-        for (const key of Object.keys(grouped)) {
-            const g = grouped[key];
-            if (g.entries.some(t => toMinutes(t) >= 1080)) {
-                hasEveningEntry.add(key);
+        const eveningStartDates = new Set(); // dates confirmed as overnight shift starts
+        const consumedMornings = new Set();  // dates whose morning records belong to prev night
+
+        // Iterative: discover overnight starts, mark next-day mornings, repeat
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (const key of Object.keys(grouped)) {
+                if (eveningStartDates.has(key)) continue; // already confirmed
+                const g = grouped[key];
+                if (g.entries.length === 0) continue;
+
+                let entries = [...g.entries];
+
+                // Filter consumed morning entries (from a previous overnight)
+                if (consumedMornings.has(key)) {
+                    entries = entries.filter(t => toMinutes(t) >= 720);
+                }
+
+                if (entries.length === 0) continue;
+
+                // Check if the FIRST remaining entry is in the evening
+                const firstEntryMins = toMinutes(entries[0]);
+                if (firstEntryMins >= 1080) { // >= 18:00
+                    eveningStartDates.add(key);
+
+                    // Mark next day's morning as consumed
+                    const nextDay = new Date(g.date + 'T12:00:00');
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    const nextDayStr = toLocalDateStr(nextDay);
+                    consumedMornings.add(`${g.name}||${nextDayStr}`);
+
+                    changed = true;
+                }
             }
         }
 
-        // Step 2: Process each employee-day
+        // Process each employee-day
         const reportRows = [];
         for (const key of Object.keys(grouped)) {
             const g = grouped[key];
@@ -362,28 +409,10 @@ app.get('/api/reports/weekly', async (req, res) => {
             let entries = [...g.entries];
             let exits = [...g.exits];
 
-            const eveningEntries = entries.filter(t => toMinutes(t) >= 1080);
-            const hasEvening = eveningEntries.length > 0;
-
-            // CASE A: This date has evening entries
-            // → Use ONLY the first evening entry (morning records = break noise from prev night)
-            // → Exit comes from next day morning
-            if (hasEvening) {
-                entries = eveningEntries;
-                exits = []; // will be fetched from next day
-            } else {
-                // CASE B: This date has ONLY morning/afternoon entries
-                // → Check if PREVIOUS date had an evening entry for this employee
-                const prevDay = new Date(g.date);
-                prevDay.setDate(prevDay.getDate() - 1);
-                const prevDayStr = prevDay.toISOString().split('T')[0];
-                const prevDayKey = `${g.name}||${prevDayStr}`;
-
-                if (hasEveningEntry.has(prevDayKey)) {
-                    // Previous day had an evening entry → this morning is break noise → SKIP
-                    continue;
-                }
-                // Otherwise: this is a normal day shift, keep all entries/exits
+            // Filter consumed morning records
+            if (consumedMornings.has(key)) {
+                entries = entries.filter(t => toMinutes(t) >= 720);
+                exits = exits.filter(t => toMinutes(t) >= 720);
             }
 
             if (entries.length === 0) continue;
@@ -406,18 +435,19 @@ app.get('/api/reports/weekly', async (req, res) => {
                 }
             }
 
-            // Overnight handling (purely time-based): evening entry → exit on next day
+            // Overnight: if this date is confirmed as evening start, grab exit from next morning
             let isOvernightSession = false;
-            const entryMins = toMinutes(firstEntry);
-            if (entryMins >= 1080) { // entry is after 18:00
+            if (eveningStartDates.has(key)) {
                 isOvernightSession = true;
-                const nextDay = new Date(g.date);
+                // Clear same-day exits (they are breaks, not final exit)
+                lastExit = null;
+
+                const nextDay = new Date(g.date + 'T12:00:00');
                 nextDay.setDate(nextDay.getDate() + 1);
-                const nextDayStr = nextDay.toISOString().split('T')[0];
+                const nextDayStr = toLocalDateStr(nextDay);
                 const nextDayKey = `${g.name}||${nextDayStr}`;
 
                 if (grouped[nextDayKey]) {
-                    // Take the LAST exit before noon on next day
                     const morningExits = grouped[nextDayKey].exits.filter(t => toMinutes(t) < 720);
                     if (morningExits.length > 0) {
                         lastExit = morningExits[morningExits.length - 1];
@@ -495,6 +525,54 @@ app.get('/api/reports/weekly', async (req, res) => {
         // Sort by name, then date
         reportRows.sort((a, b) => a.employeeName.localeCompare(b.employeeName) || a.date.localeCompare(b.date));
 
+        // Add leave rows for ALL employees (including those with no attendance)
+        const LEAVE_LABELS = { odmor: 'Odmor', bolovanje: 'Bolovanje', slobodan_dan: 'Slobodan dan' };
+        const attendanceKeys = new Set(reportRows.map(r => `${r.employeeName}||${r.date}`));
+
+        for (const lr of leaveRecords) {
+            if (!reportDates.includes(lr.date)) continue;
+            const key = `${lr.employeeName}||${lr.date}`;
+            if (attendanceKeys.has(key)) {
+                // Employee has attendance AND leave on same day — just tag the existing row
+                const existing = reportRows.find(r => r.employeeName === lr.employeeName && r.date === lr.date);
+                if (existing) existing.leaveType = lr.leaveType;
+                continue;
+            }
+
+            // Find employee info
+            const nameLower = (lr.employeeName || '').toLowerCase();
+            const empMatch = employees.find(e => {
+                const fLow = e.firstName.toLowerCase();
+                const lLow = e.lastName.toLowerCase();
+                return nameLower.includes(fLow) && nameLower.includes(lLow);
+            });
+
+            reportRows.push({
+                employeeName: lr.employeeName,
+                date: lr.date,
+                firstEntry: null,
+                lastExit: null,
+                isOvernightSession: false,
+                shiftName: '-',
+                shiftColor: '#6366f1',
+                shiftStart: '-',
+                shiftEnd: '-',
+                workedMins: 0,
+                workedFormatted: '-',
+                overtimeMins: 0,
+                overtimeFormatted: null,
+                overtimeApproved: false,
+                lateMins: 0,
+                status: LEAVE_LABELS[lr.leaveType] || lr.leaveType,
+                leaveType: lr.leaveType,
+                department: empMatch ? empMatch.department : '-',
+                position: empMatch ? empMatch.position : '-'
+            });
+        }
+
+        // Re-sort after adding leave rows
+        reportRows.sort((a, b) => a.employeeName.localeCompare(b.employeeName) || a.date.localeCompare(b.date));
+
         res.json({ success: true, data: reportRows, dates: reportDates });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -514,6 +592,76 @@ app.post('/api/overtime/approve', async (req, res) => {
         });
 
         res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// API: Create leave record(s) — supports period
+app.post('/api/leave', async (req, res) => {
+    try {
+        const { employeeName, startDate, endDate, leaveType, note } = req.body;
+        if (!employeeName || !startDate || !leaveType) {
+            return res.status(400).json({ success: false, error: 'employeeName, startDate i leaveType su obavezni.' });
+        }
+
+        const end = endDate || startDate;
+        const dates = [];
+        const d = new Date(startDate + 'T12:00:00');
+        const last = new Date(end + 'T12:00:00');
+        while (d <= last) {
+            // Skip weekends (0=Sun, 6=Sat)
+            const dow = d.getDay();
+            if (dow !== 0 && dow !== 6) {
+                dates.push(toLocalDateStr(d));
+            }
+            d.setDate(d.getDate() + 1);
+        }
+
+        let created = 0;
+        for (const date of dates) {
+            try {
+                await prisma.leaveRecord.upsert({
+                    where: { employeeName_date: { employeeName, date } },
+                    update: { leaveType, note: note || null },
+                    create: { employeeName, date, leaveType, note: note || null }
+                });
+                created++;
+            } catch (e) { /* skip duplicates */ }
+        }
+
+        res.json({ success: true, message: `Kreirano ${created} dana odsustva.`, count: created });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// API: Delete leave record
+app.delete('/api/leave', async (req, res) => {
+    try {
+        const { employeeName, date } = req.body;
+        if (!employeeName || !date) return res.status(400).json({ success: false, error: 'employeeName i date su obavezni.' });
+
+        await prisma.leaveRecord.deleteMany({
+            where: { employeeName, date }
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// API: Get leave records (optional filters)
+app.get('/api/leave', async (req, res) => {
+    try {
+        const where = {};
+        if (req.query.employeeName) where.employeeName = req.query.employeeName;
+        if (req.query.startDate && req.query.endDate) {
+            where.date = { gte: req.query.startDate, lte: req.query.endDate };
+        }
+        const records = await prisma.leaveRecord.findMany({ where, orderBy: { date: 'asc' } });
+        res.json({ success: true, data: records });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

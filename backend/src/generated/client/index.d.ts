@@ -38,6 +38,11 @@ export type Shift = $Result.DefaultSelection<Prisma.$ShiftPayload>
  * 
  */
 export type OvertimeApproval = $Result.DefaultSelection<Prisma.$OvertimeApprovalPayload>
+/**
+ * Model LeaveRecord
+ * 
+ */
+export type LeaveRecord = $Result.DefaultSelection<Prisma.$LeaveRecordPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -206,6 +211,16 @@ export class PrismaClient<
     * ```
     */
   get overtimeApproval(): Prisma.OvertimeApprovalDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.leaveRecord`: Exposes CRUD operations for the **LeaveRecord** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LeaveRecords
+    * const leaveRecords = await prisma.leaveRecord.findMany()
+    * ```
+    */
+  get leaveRecord(): Prisma.LeaveRecordDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -651,7 +666,8 @@ export namespace Prisma {
     Settings: 'Settings',
     Employee: 'Employee',
     Shift: 'Shift',
-    OvertimeApproval: 'OvertimeApproval'
+    OvertimeApproval: 'OvertimeApproval',
+    LeaveRecord: 'LeaveRecord'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -670,7 +686,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "attendanceRecord" | "settings" | "employee" | "shift" | "overtimeApproval"
+      modelProps: "attendanceRecord" | "settings" | "employee" | "shift" | "overtimeApproval" | "leaveRecord"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1044,6 +1060,80 @@ export namespace Prisma {
           }
         }
       }
+      LeaveRecord: {
+        payload: Prisma.$LeaveRecordPayload<ExtArgs>
+        fields: Prisma.LeaveRecordFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LeaveRecordFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LeaveRecordFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          findFirst: {
+            args: Prisma.LeaveRecordFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LeaveRecordFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          findMany: {
+            args: Prisma.LeaveRecordFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>[]
+          }
+          create: {
+            args: Prisma.LeaveRecordCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          createMany: {
+            args: Prisma.LeaveRecordCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LeaveRecordCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>[]
+          }
+          delete: {
+            args: Prisma.LeaveRecordDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          update: {
+            args: Prisma.LeaveRecordUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          deleteMany: {
+            args: Prisma.LeaveRecordDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LeaveRecordUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LeaveRecordUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>[]
+          }
+          upsert: {
+            args: Prisma.LeaveRecordUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeaveRecordPayload>
+          }
+          aggregate: {
+            args: Prisma.LeaveRecordAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLeaveRecord>
+          }
+          groupBy: {
+            args: Prisma.LeaveRecordGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LeaveRecordGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LeaveRecordCountArgs<ExtArgs>
+            result: $Utils.Optional<LeaveRecordCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1145,6 +1235,7 @@ export namespace Prisma {
     employee?: EmployeeOmit
     shift?: ShiftOmit
     overtimeApproval?: OvertimeApprovalOmit
+    leaveRecord?: LeaveRecordOmit
   }
 
   /* Types for Logging */
@@ -6447,6 +6538,1046 @@ export namespace Prisma {
 
 
   /**
+   * Model LeaveRecord
+   */
+
+  export type AggregateLeaveRecord = {
+    _count: LeaveRecordCountAggregateOutputType | null
+    _avg: LeaveRecordAvgAggregateOutputType | null
+    _sum: LeaveRecordSumAggregateOutputType | null
+    _min: LeaveRecordMinAggregateOutputType | null
+    _max: LeaveRecordMaxAggregateOutputType | null
+  }
+
+  export type LeaveRecordAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type LeaveRecordSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type LeaveRecordMinAggregateOutputType = {
+    id: number | null
+    employeeName: string | null
+    date: string | null
+    leaveType: string | null
+    note: string | null
+    createdAt: Date | null
+  }
+
+  export type LeaveRecordMaxAggregateOutputType = {
+    id: number | null
+    employeeName: string | null
+    date: string | null
+    leaveType: string | null
+    note: string | null
+    createdAt: Date | null
+  }
+
+  export type LeaveRecordCountAggregateOutputType = {
+    id: number
+    employeeName: number
+    date: number
+    leaveType: number
+    note: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type LeaveRecordAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type LeaveRecordSumAggregateInputType = {
+    id?: true
+  }
+
+  export type LeaveRecordMinAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    leaveType?: true
+    note?: true
+    createdAt?: true
+  }
+
+  export type LeaveRecordMaxAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    leaveType?: true
+    note?: true
+    createdAt?: true
+  }
+
+  export type LeaveRecordCountAggregateInputType = {
+    id?: true
+    employeeName?: true
+    date?: true
+    leaveType?: true
+    note?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type LeaveRecordAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LeaveRecord to aggregate.
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LeaveRecords to fetch.
+     */
+    orderBy?: LeaveRecordOrderByWithRelationInput | LeaveRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LeaveRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LeaveRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LeaveRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LeaveRecords
+    **/
+    _count?: true | LeaveRecordCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LeaveRecordAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LeaveRecordSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LeaveRecordMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LeaveRecordMaxAggregateInputType
+  }
+
+  export type GetLeaveRecordAggregateType<T extends LeaveRecordAggregateArgs> = {
+        [P in keyof T & keyof AggregateLeaveRecord]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLeaveRecord[P]>
+      : GetScalarType<T[P], AggregateLeaveRecord[P]>
+  }
+
+
+
+
+  export type LeaveRecordGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeaveRecordWhereInput
+    orderBy?: LeaveRecordOrderByWithAggregationInput | LeaveRecordOrderByWithAggregationInput[]
+    by: LeaveRecordScalarFieldEnum[] | LeaveRecordScalarFieldEnum
+    having?: LeaveRecordScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LeaveRecordCountAggregateInputType | true
+    _avg?: LeaveRecordAvgAggregateInputType
+    _sum?: LeaveRecordSumAggregateInputType
+    _min?: LeaveRecordMinAggregateInputType
+    _max?: LeaveRecordMaxAggregateInputType
+  }
+
+  export type LeaveRecordGroupByOutputType = {
+    id: number
+    employeeName: string
+    date: string
+    leaveType: string
+    note: string | null
+    createdAt: Date
+    _count: LeaveRecordCountAggregateOutputType | null
+    _avg: LeaveRecordAvgAggregateOutputType | null
+    _sum: LeaveRecordSumAggregateOutputType | null
+    _min: LeaveRecordMinAggregateOutputType | null
+    _max: LeaveRecordMaxAggregateOutputType | null
+  }
+
+  type GetLeaveRecordGroupByPayload<T extends LeaveRecordGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LeaveRecordGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LeaveRecordGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LeaveRecordGroupByOutputType[P]>
+            : GetScalarType<T[P], LeaveRecordGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LeaveRecordSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    leaveType?: boolean
+    note?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["leaveRecord"]>
+
+  export type LeaveRecordSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    leaveType?: boolean
+    note?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["leaveRecord"]>
+
+  export type LeaveRecordSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    leaveType?: boolean
+    note?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["leaveRecord"]>
+
+  export type LeaveRecordSelectScalar = {
+    id?: boolean
+    employeeName?: boolean
+    date?: boolean
+    leaveType?: boolean
+    note?: boolean
+    createdAt?: boolean
+  }
+
+  export type LeaveRecordOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeName" | "date" | "leaveType" | "note" | "createdAt", ExtArgs["result"]["leaveRecord"]>
+
+  export type $LeaveRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LeaveRecord"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      employeeName: string
+      date: string
+      leaveType: string
+      note: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["leaveRecord"]>
+    composites: {}
+  }
+
+  type LeaveRecordGetPayload<S extends boolean | null | undefined | LeaveRecordDefaultArgs> = $Result.GetResult<Prisma.$LeaveRecordPayload, S>
+
+  type LeaveRecordCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LeaveRecordFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LeaveRecordCountAggregateInputType | true
+    }
+
+  export interface LeaveRecordDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LeaveRecord'], meta: { name: 'LeaveRecord' } }
+    /**
+     * Find zero or one LeaveRecord that matches the filter.
+     * @param {LeaveRecordFindUniqueArgs} args - Arguments to find a LeaveRecord
+     * @example
+     * // Get one LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LeaveRecordFindUniqueArgs>(args: SelectSubset<T, LeaveRecordFindUniqueArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LeaveRecord that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LeaveRecordFindUniqueOrThrowArgs} args - Arguments to find a LeaveRecord
+     * @example
+     * // Get one LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LeaveRecordFindUniqueOrThrowArgs>(args: SelectSubset<T, LeaveRecordFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LeaveRecord that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordFindFirstArgs} args - Arguments to find a LeaveRecord
+     * @example
+     * // Get one LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LeaveRecordFindFirstArgs>(args?: SelectSubset<T, LeaveRecordFindFirstArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LeaveRecord that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordFindFirstOrThrowArgs} args - Arguments to find a LeaveRecord
+     * @example
+     * // Get one LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LeaveRecordFindFirstOrThrowArgs>(args?: SelectSubset<T, LeaveRecordFindFirstOrThrowArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LeaveRecords that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LeaveRecords
+     * const leaveRecords = await prisma.leaveRecord.findMany()
+     * 
+     * // Get first 10 LeaveRecords
+     * const leaveRecords = await prisma.leaveRecord.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const leaveRecordWithIdOnly = await prisma.leaveRecord.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LeaveRecordFindManyArgs>(args?: SelectSubset<T, LeaveRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LeaveRecord.
+     * @param {LeaveRecordCreateArgs} args - Arguments to create a LeaveRecord.
+     * @example
+     * // Create one LeaveRecord
+     * const LeaveRecord = await prisma.leaveRecord.create({
+     *   data: {
+     *     // ... data to create a LeaveRecord
+     *   }
+     * })
+     * 
+     */
+    create<T extends LeaveRecordCreateArgs>(args: SelectSubset<T, LeaveRecordCreateArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LeaveRecords.
+     * @param {LeaveRecordCreateManyArgs} args - Arguments to create many LeaveRecords.
+     * @example
+     * // Create many LeaveRecords
+     * const leaveRecord = await prisma.leaveRecord.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LeaveRecordCreateManyArgs>(args?: SelectSubset<T, LeaveRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LeaveRecords and returns the data saved in the database.
+     * @param {LeaveRecordCreateManyAndReturnArgs} args - Arguments to create many LeaveRecords.
+     * @example
+     * // Create many LeaveRecords
+     * const leaveRecord = await prisma.leaveRecord.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LeaveRecords and only return the `id`
+     * const leaveRecordWithIdOnly = await prisma.leaveRecord.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LeaveRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, LeaveRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LeaveRecord.
+     * @param {LeaveRecordDeleteArgs} args - Arguments to delete one LeaveRecord.
+     * @example
+     * // Delete one LeaveRecord
+     * const LeaveRecord = await prisma.leaveRecord.delete({
+     *   where: {
+     *     // ... filter to delete one LeaveRecord
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LeaveRecordDeleteArgs>(args: SelectSubset<T, LeaveRecordDeleteArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LeaveRecord.
+     * @param {LeaveRecordUpdateArgs} args - Arguments to update one LeaveRecord.
+     * @example
+     * // Update one LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LeaveRecordUpdateArgs>(args: SelectSubset<T, LeaveRecordUpdateArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LeaveRecords.
+     * @param {LeaveRecordDeleteManyArgs} args - Arguments to filter LeaveRecords to delete.
+     * @example
+     * // Delete a few LeaveRecords
+     * const { count } = await prisma.leaveRecord.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LeaveRecordDeleteManyArgs>(args?: SelectSubset<T, LeaveRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LeaveRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LeaveRecords
+     * const leaveRecord = await prisma.leaveRecord.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LeaveRecordUpdateManyArgs>(args: SelectSubset<T, LeaveRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LeaveRecords and returns the data updated in the database.
+     * @param {LeaveRecordUpdateManyAndReturnArgs} args - Arguments to update many LeaveRecords.
+     * @example
+     * // Update many LeaveRecords
+     * const leaveRecord = await prisma.leaveRecord.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LeaveRecords and only return the `id`
+     * const leaveRecordWithIdOnly = await prisma.leaveRecord.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LeaveRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, LeaveRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LeaveRecord.
+     * @param {LeaveRecordUpsertArgs} args - Arguments to update or create a LeaveRecord.
+     * @example
+     * // Update or create a LeaveRecord
+     * const leaveRecord = await prisma.leaveRecord.upsert({
+     *   create: {
+     *     // ... data to create a LeaveRecord
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LeaveRecord we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LeaveRecordUpsertArgs>(args: SelectSubset<T, LeaveRecordUpsertArgs<ExtArgs>>): Prisma__LeaveRecordClient<$Result.GetResult<Prisma.$LeaveRecordPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LeaveRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordCountArgs} args - Arguments to filter LeaveRecords to count.
+     * @example
+     * // Count the number of LeaveRecords
+     * const count = await prisma.leaveRecord.count({
+     *   where: {
+     *     // ... the filter for the LeaveRecords we want to count
+     *   }
+     * })
+    **/
+    count<T extends LeaveRecordCountArgs>(
+      args?: Subset<T, LeaveRecordCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LeaveRecordCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LeaveRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LeaveRecordAggregateArgs>(args: Subset<T, LeaveRecordAggregateArgs>): Prisma.PrismaPromise<GetLeaveRecordAggregateType<T>>
+
+    /**
+     * Group by LeaveRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeaveRecordGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LeaveRecordGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LeaveRecordGroupByArgs['orderBy'] }
+        : { orderBy?: LeaveRecordGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LeaveRecordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLeaveRecordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LeaveRecord model
+   */
+  readonly fields: LeaveRecordFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LeaveRecord.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LeaveRecordClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LeaveRecord model
+   */
+  interface LeaveRecordFieldRefs {
+    readonly id: FieldRef<"LeaveRecord", 'Int'>
+    readonly employeeName: FieldRef<"LeaveRecord", 'String'>
+    readonly date: FieldRef<"LeaveRecord", 'String'>
+    readonly leaveType: FieldRef<"LeaveRecord", 'String'>
+    readonly note: FieldRef<"LeaveRecord", 'String'>
+    readonly createdAt: FieldRef<"LeaveRecord", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LeaveRecord findUnique
+   */
+  export type LeaveRecordFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which LeaveRecord to fetch.
+     */
+    where: LeaveRecordWhereUniqueInput
+  }
+
+  /**
+   * LeaveRecord findUniqueOrThrow
+   */
+  export type LeaveRecordFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which LeaveRecord to fetch.
+     */
+    where: LeaveRecordWhereUniqueInput
+  }
+
+  /**
+   * LeaveRecord findFirst
+   */
+  export type LeaveRecordFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which LeaveRecord to fetch.
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LeaveRecords to fetch.
+     */
+    orderBy?: LeaveRecordOrderByWithRelationInput | LeaveRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LeaveRecords.
+     */
+    cursor?: LeaveRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LeaveRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LeaveRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LeaveRecords.
+     */
+    distinct?: LeaveRecordScalarFieldEnum | LeaveRecordScalarFieldEnum[]
+  }
+
+  /**
+   * LeaveRecord findFirstOrThrow
+   */
+  export type LeaveRecordFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which LeaveRecord to fetch.
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LeaveRecords to fetch.
+     */
+    orderBy?: LeaveRecordOrderByWithRelationInput | LeaveRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LeaveRecords.
+     */
+    cursor?: LeaveRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LeaveRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LeaveRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LeaveRecords.
+     */
+    distinct?: LeaveRecordScalarFieldEnum | LeaveRecordScalarFieldEnum[]
+  }
+
+  /**
+   * LeaveRecord findMany
+   */
+  export type LeaveRecordFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which LeaveRecords to fetch.
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LeaveRecords to fetch.
+     */
+    orderBy?: LeaveRecordOrderByWithRelationInput | LeaveRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LeaveRecords.
+     */
+    cursor?: LeaveRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LeaveRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LeaveRecords.
+     */
+    skip?: number
+    distinct?: LeaveRecordScalarFieldEnum | LeaveRecordScalarFieldEnum[]
+  }
+
+  /**
+   * LeaveRecord create
+   */
+  export type LeaveRecordCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * The data needed to create a LeaveRecord.
+     */
+    data: XOR<LeaveRecordCreateInput, LeaveRecordUncheckedCreateInput>
+  }
+
+  /**
+   * LeaveRecord createMany
+   */
+  export type LeaveRecordCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LeaveRecords.
+     */
+    data: LeaveRecordCreateManyInput | LeaveRecordCreateManyInput[]
+  }
+
+  /**
+   * LeaveRecord createManyAndReturn
+   */
+  export type LeaveRecordCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * The data used to create many LeaveRecords.
+     */
+    data: LeaveRecordCreateManyInput | LeaveRecordCreateManyInput[]
+  }
+
+  /**
+   * LeaveRecord update
+   */
+  export type LeaveRecordUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * The data needed to update a LeaveRecord.
+     */
+    data: XOR<LeaveRecordUpdateInput, LeaveRecordUncheckedUpdateInput>
+    /**
+     * Choose, which LeaveRecord to update.
+     */
+    where: LeaveRecordWhereUniqueInput
+  }
+
+  /**
+   * LeaveRecord updateMany
+   */
+  export type LeaveRecordUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LeaveRecords.
+     */
+    data: XOR<LeaveRecordUpdateManyMutationInput, LeaveRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which LeaveRecords to update
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * Limit how many LeaveRecords to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LeaveRecord updateManyAndReturn
+   */
+  export type LeaveRecordUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * The data used to update LeaveRecords.
+     */
+    data: XOR<LeaveRecordUpdateManyMutationInput, LeaveRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which LeaveRecords to update
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * Limit how many LeaveRecords to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LeaveRecord upsert
+   */
+  export type LeaveRecordUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * The filter to search for the LeaveRecord to update in case it exists.
+     */
+    where: LeaveRecordWhereUniqueInput
+    /**
+     * In case the LeaveRecord found by the `where` argument doesn't exist, create a new LeaveRecord with this data.
+     */
+    create: XOR<LeaveRecordCreateInput, LeaveRecordUncheckedCreateInput>
+    /**
+     * In case the LeaveRecord was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LeaveRecordUpdateInput, LeaveRecordUncheckedUpdateInput>
+  }
+
+  /**
+   * LeaveRecord delete
+   */
+  export type LeaveRecordDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+    /**
+     * Filter which LeaveRecord to delete.
+     */
+    where: LeaveRecordWhereUniqueInput
+  }
+
+  /**
+   * LeaveRecord deleteMany
+   */
+  export type LeaveRecordDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LeaveRecords to delete
+     */
+    where?: LeaveRecordWhereInput
+    /**
+     * Limit how many LeaveRecords to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LeaveRecord without action
+   */
+  export type LeaveRecordDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LeaveRecord
+     */
+    select?: LeaveRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LeaveRecord
+     */
+    omit?: LeaveRecordOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -6516,6 +7647,18 @@ export namespace Prisma {
   };
 
   export type OvertimeApprovalScalarFieldEnum = (typeof OvertimeApprovalScalarFieldEnum)[keyof typeof OvertimeApprovalScalarFieldEnum]
+
+
+  export const LeaveRecordScalarFieldEnum: {
+    id: 'id',
+    employeeName: 'employeeName',
+    date: 'date',
+    leaveType: 'leaveType',
+    note: 'note',
+    createdAt: 'createdAt'
+  };
+
+  export type LeaveRecordScalarFieldEnum = (typeof LeaveRecordScalarFieldEnum)[keyof typeof LeaveRecordScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -6879,6 +8022,66 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"OvertimeApproval"> | Date | string
   }
 
+  export type LeaveRecordWhereInput = {
+    AND?: LeaveRecordWhereInput | LeaveRecordWhereInput[]
+    OR?: LeaveRecordWhereInput[]
+    NOT?: LeaveRecordWhereInput | LeaveRecordWhereInput[]
+    id?: IntFilter<"LeaveRecord"> | number
+    employeeName?: StringFilter<"LeaveRecord"> | string
+    date?: StringFilter<"LeaveRecord"> | string
+    leaveType?: StringFilter<"LeaveRecord"> | string
+    note?: StringNullableFilter<"LeaveRecord"> | string | null
+    createdAt?: DateTimeFilter<"LeaveRecord"> | Date | string
+  }
+
+  export type LeaveRecordOrderByWithRelationInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    leaveType?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LeaveRecordWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    employeeName_date?: LeaveRecordEmployeeNameDateCompoundUniqueInput
+    AND?: LeaveRecordWhereInput | LeaveRecordWhereInput[]
+    OR?: LeaveRecordWhereInput[]
+    NOT?: LeaveRecordWhereInput | LeaveRecordWhereInput[]
+    employeeName?: StringFilter<"LeaveRecord"> | string
+    date?: StringFilter<"LeaveRecord"> | string
+    leaveType?: StringFilter<"LeaveRecord"> | string
+    note?: StringNullableFilter<"LeaveRecord"> | string | null
+    createdAt?: DateTimeFilter<"LeaveRecord"> | Date | string
+  }, "id" | "employeeName_date">
+
+  export type LeaveRecordOrderByWithAggregationInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    leaveType?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: LeaveRecordCountOrderByAggregateInput
+    _avg?: LeaveRecordAvgOrderByAggregateInput
+    _max?: LeaveRecordMaxOrderByAggregateInput
+    _min?: LeaveRecordMinOrderByAggregateInput
+    _sum?: LeaveRecordSumOrderByAggregateInput
+  }
+
+  export type LeaveRecordScalarWhereWithAggregatesInput = {
+    AND?: LeaveRecordScalarWhereWithAggregatesInput | LeaveRecordScalarWhereWithAggregatesInput[]
+    OR?: LeaveRecordScalarWhereWithAggregatesInput[]
+    NOT?: LeaveRecordScalarWhereWithAggregatesInput | LeaveRecordScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"LeaveRecord"> | number
+    employeeName?: StringWithAggregatesFilter<"LeaveRecord"> | string
+    date?: StringWithAggregatesFilter<"LeaveRecord"> | string
+    leaveType?: StringWithAggregatesFilter<"LeaveRecord"> | string
+    note?: StringNullableWithAggregatesFilter<"LeaveRecord"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"LeaveRecord"> | Date | string
+  }
+
   export type AttendanceRecordCreateInput = {
     date: string
     eventType: string
@@ -7183,6 +8386,66 @@ export namespace Prisma {
     employeeName?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeaveRecordCreateInput = {
+    employeeName: string
+    date: string
+    leaveType: string
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LeaveRecordUncheckedCreateInput = {
+    id?: number
+    employeeName: string
+    date: string
+    leaveType: string
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LeaveRecordUpdateInput = {
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    leaveType?: StringFieldUpdateOperationsInput | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeaveRecordUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    leaveType?: StringFieldUpdateOperationsInput | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeaveRecordCreateManyInput = {
+    id?: number
+    employeeName: string
+    date: string
+    leaveType: string
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LeaveRecordUpdateManyMutationInput = {
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    leaveType?: StringFieldUpdateOperationsInput | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeaveRecordUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    employeeName?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    leaveType?: StringFieldUpdateOperationsInput | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7509,6 +8772,46 @@ export namespace Prisma {
   }
 
   export type OvertimeApprovalSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type LeaveRecordEmployeeNameDateCompoundUniqueInput = {
+    employeeName: string
+    date: string
+  }
+
+  export type LeaveRecordCountOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    leaveType?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LeaveRecordAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type LeaveRecordMaxOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    leaveType?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LeaveRecordMinOrderByAggregateInput = {
+    id?: SortOrder
+    employeeName?: SortOrder
+    date?: SortOrder
+    leaveType?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LeaveRecordSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

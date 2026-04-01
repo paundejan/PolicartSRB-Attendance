@@ -61,3 +61,14 @@ model OvertimeApproval {
 
   @@unique([employeeName, date])
 }
+
+model LeaveRecord {
+  id           Int      @id @default(autoincrement())
+  employeeName String
+  date         String // "YYYY-MM-DD"
+  leaveType    String // "odmor", "bolovanje", "slobodan_dan"
+  note         String?
+  createdAt    DateTime @default(now())
+
+  @@unique([employeeName, date])
+}

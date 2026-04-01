@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2 } from 'lucide-react';
+import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2, Palmtree, HeartPulse, CalendarOff, X, Plus } from 'lucide-react';
 
 function getMonday(d) {
   d = new Date(d);
@@ -9,7 +9,12 @@ function getMonday(d) {
   d.setDate(diff);
   return d;
 }
-function toISO(d) { return d.toISOString().split('T')[0]; }
+function toISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 function toDMY(dateStr) { const [y, m, d] = dateStr.split('-'); return `${d}.${m}.${y}`; }
 
 const DAY_NAMES = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub', 'Ned'];
@@ -24,6 +29,10 @@ export default function Reports() {
   const [activeTab, setActiveTab] = useState('weekly');
   const [filterDept, setFilterDept] = useState('__all__');
   const [employees, setEmployees] = useState([]);
+  const [leaveModal, setLeaveModal] = useState(null); // { employeeName, date }
+  const [leaveForm, setLeaveForm] = useState({ leaveType: 'odmor', startDate: '', endDate: '', note: '' });
+  const [showBulkLeave, setShowBulkLeave] = useState(false);
+  const [bulkLeaveEmp, setBulkLeaveEmp] = useState('');
 
   useEffect(() => { fetchChartData(); fetchEmployees(); }, []);
   useEffect(() => { fetchWeeklyReport(); }, [weekStart]);
@@ -79,6 +88,47 @@ export default function Reports() {
     } catch (err) { console.error(err); }
   };
 
+  const LEAVE_CONFIG = {
+    odmor:        { label: 'Odmor',        icon: Palmtree,   color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+    bolovanje:    { label: 'Bolovanje',    icon: HeartPulse, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    slobodan_dan: { label: 'Slobodan dan', icon: CalendarOff, color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
+  };
+
+  const assignLeave = async (employeeName, date, leaveType) => {
+    try {
+      await fetch('http://localhost:3001/api/leave', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeName, startDate: date, leaveType })
+      });
+      setLeaveModal(null);
+      fetchWeeklyReport();
+    } catch (err) { console.error(err); }
+  };
+
+  const removeLeave = async (employeeName, date) => {
+    try {
+      await fetch('http://localhost:3001/api/leave', {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeName, date })
+      });
+      fetchWeeklyReport();
+    } catch (err) { console.error(err); }
+  };
+
+  const submitBulkLeave = async () => {
+    if (!bulkLeaveEmp || !leaveForm.startDate || !leaveForm.leaveType) return;
+    try {
+      await fetch('http://localhost:3001/api/leave', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeName: bulkLeaveEmp, startDate: leaveForm.startDate, endDate: leaveForm.endDate || leaveForm.startDate, leaveType: leaveForm.leaveType, note: leaveForm.note })
+      });
+      setShowBulkLeave(false);
+      setLeaveForm({ leaveType: 'odmor', startDate: '', endDate: '', note: '' });
+      setBulkLeaveEmp('');
+      fetchWeeklyReport();
+    } catch (err) { console.error(err); }
+  };
+
   // Unique departments from employees DB
   const allDepts = [...new Set(employees.map(e => e.department).filter(Boolean))].sort();
 
@@ -93,9 +143,15 @@ export default function Reports() {
 
   // Calculate weekly summaries per employee  
   const employeeList = Object.values(groupedByEmployee).map(emp => {
-    let totalWorkedMins = 0, totalOvertimeMins = 0, totalLateMins = 0;
+    let totalWorkedMins = 0, totalOvertimeMins = 0, totalLateMins = 0, totalLeaveDays = 0;
     Object.values(emp.days).forEach(day => {
-      if (day.firstEntry) totalWorkedMins += 480;
+      if (day.leaveType && !day.firstEntry) {
+        // Leave day with no attendance = 8h paid leave
+        totalWorkedMins += 480;
+        totalLeaveDays++;
+      } else if (day.firstEntry) {
+        totalWorkedMins += 480;
+      }
       if (day.overtimeApproved) totalOvertimeMins += day.overtimeMins || 0;
       totalLateMins += day.lateMins || 0;
     });
@@ -104,6 +160,7 @@ export default function Reports() {
       totalWorkedMins,
       totalOvertimeMins,
       totalLateMins,
+      totalLeaveDays,
       totalWorkedFormatted: `${Math.floor(totalWorkedMins / 60)}h`,
       totalOvertimeFormatted: `${Math.floor(totalOvertimeMins / 60)}h ${totalOvertimeMins % 60}m`,
       totalLateFormatted: `${Math.floor(totalLateMins / 60)}h ${totalLateMins % 60}m`,
@@ -158,6 +215,7 @@ export default function Reports() {
   const summaryCol = { padding: '0.4rem 0.3rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: 600, borderRight: '2px solid rgba(99,102,241,0.3)' };
 
   return (
+    <>
     <div>
       <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -183,6 +241,11 @@ export default function Reports() {
           <div className="glass-panel" style={{ padding: '0.75rem 1.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
             <button onClick={() => shiftWeek(-1)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--surface-border)', color: 'white', borderRadius: '8px', padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'inherit', fontSize: '0.85rem' }}>
               <ChevronLeft size={16} /> Prethodna
+            </button>
+
+            {/* Bulk leave button */}
+            <button onClick={() => setShowBulkLeave(true)} style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', color: '#3b82f6', borderRadius: '8px', padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'inherit', fontSize: '0.85rem', fontWeight: 600 }}>
+              <Plus size={14} /> Odsustvo
             </button>
 
             {/* Department filter */}
@@ -272,7 +335,31 @@ export default function Reports() {
                           </td>
                           {weeklyDates.map(date => {
                             const d = emp.days[date];
-                            if (!d) return <td key={date} style={{ padding: '0.3rem', textAlign: 'center', color: 'var(--text-muted)', opacity: 0.3 }}>—</td>;
+                            // Empty cell — clickable to assign leave
+                            if (!d) return (
+                              <td key={date} style={{ padding: '0.3rem', textAlign: 'center', cursor: 'pointer', position: 'relative' }}
+                                onClick={() => setLeaveModal({ employeeName: emp.name, date })}>
+                                <span style={{ color: 'var(--text-muted)', opacity: 0.3, fontSize: '0.8rem' }}>—</span>
+                              </td>
+                            );
+                            // Leave day (no attendance)
+                            if (d.leaveType && !d.firstEntry) {
+                              const lc = LEAVE_CONFIG[d.leaveType] || LEAVE_CONFIG.slobodan_dan;
+                              const LeaveIcon = lc.icon;
+                              return (
+                                <td key={date} style={{ padding: '0.4rem 0.3rem', verticalAlign: 'top', textAlign: 'center' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '999px', background: lc.bg, border: `1px solid ${lc.color}44`, cursor: 'pointer' }}
+                                      onClick={() => removeLeave(d.employeeName, d.date)} title="Klikni za brisanje">
+                                      <LeaveIcon size={12} color={lc.color} />
+                                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: lc.color }}>{lc.label}</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>8h</span>
+                                  </div>
+                                </td>
+                              );
+                            }
+                            // Normal attendance cell
                             return (
                               <td key={date} style={{ padding: '0.4rem 0.3rem', verticalAlign: 'top', textAlign: 'center' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
@@ -309,8 +396,10 @@ export default function Reports() {
           <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem', padding: '0 0.5rem', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><LogIn size={13} color="var(--success)" /> Prva prijava</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><LogOut size={13} color="var(--danger)" /> Poslednja odjava</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Moon size={13} color="var(--primary-color)" /> Noćna smena (izlaz sutradan)</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked readOnly style={{ width: '12px', height: '12px', accentColor: 'var(--success)' }} /> Prihvaćeno prekovremeno</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Moon size={13} color="var(--primary-color)" /> Noćna smena</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Palmtree size={13} color="#3b82f6" /> Odmor (8h)</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><HeartPulse size={13} color="#ef4444" /> Bolovanje (8h)</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><CalendarOff size={13} color="#94a3b8" /> Slobodan dan (8h)</span>
           </div>
         </div>
       )}
@@ -337,5 +426,96 @@ export default function Reports() {
         </div>
       )}
     </div>
+
+      <LeavePopup />
+      <BulkLeaveModal />
+    </>
   );
+
+  // Leave assignment popup (single day)
+  function LeavePopup() {
+    if (!leaveModal) return null;
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        onClick={() => setLeaveModal(null)}>
+        <div style={{ background: '#1e293b', border: '1px solid var(--surface-border)', borderRadius: '16px', padding: '1.5rem', minWidth: '300px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1rem' }}>Dodeli odsustvo</h3>
+            <button onClick={() => setLeaveModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+          </div>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0 0 1rem' }}>
+            {leaveModal.employeeName} — {toDMY(leaveModal.date)}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {Object.entries(LEAVE_CONFIG).map(([key, cfg]) => {
+              const Icon = cfg.icon;
+              return (
+                <button key={key} onClick={() => assignLeave(leaveModal.employeeName, leaveModal.date, key)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', borderRadius: '10px', border: `1px solid ${cfg.color}44`, background: cfg.bg, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.9rem', fontWeight: 600, color: cfg.color }}>
+                  <Icon size={16} /> {cfg.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Bulk leave modal (period)
+  function BulkLeaveModal() {
+    if (!showBulkLeave) return null;
+    // Build employee name list from all available employees
+    const allNames = [...new Set([
+      ...employees.map(e => `${e.lastName} ${e.firstName}`.toUpperCase()),
+      ...weeklyData.map(r => r.employeeName)
+    ])].sort();
+
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        onClick={() => setShowBulkLeave(false)}>
+        <div style={{ background: '#1e293b', border: '1px solid var(--surface-border)', borderRadius: '16px', padding: '2rem', minWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Masovni unos odsustva</h3>
+            <button onClick={() => setShowBulkLeave(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>Zaposleni</label>
+              <select value={bulkLeaveEmp} onChange={e => setBulkLeaveEmp(e.target.value)} className="input-glass" style={{ width: '100%' }}>
+                <option value="">— Izaberite —</option>
+                {allNames.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>Tip odsustva</label>
+              <select value={leaveForm.leaveType} onChange={e => setLeaveForm(f => ({ ...f, leaveType: e.target.value }))} className="input-glass" style={{ width: '100%' }}>
+                {Object.entries(LEAVE_CONFIG).map(([key, cfg]) => <option key={key} value={key}>{cfg.label}</option>)}
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>Od</label>
+                <input type="date" value={leaveForm.startDate} onChange={e => setLeaveForm(f => ({ ...f, startDate: e.target.value }))} className="input-glass" style={{ width: '100%', colorScheme: 'dark' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>Do</label>
+                <input type="date" value={leaveForm.endDate} onChange={e => setLeaveForm(f => ({ ...f, endDate: e.target.value }))} className="input-glass" style={{ width: '100%', colorScheme: 'dark' }} />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>Napomena (opciono)</label>
+              <input type="text" value={leaveForm.note} onChange={e => setLeaveForm(f => ({ ...f, note: e.target.value }))} className="input-glass" style={{ width: '100%' }} placeholder="Npr. godišnji odmor" />
+            </div>
+            <button onClick={submitBulkLeave} className="btn-primary" style={{ width: '100%', padding: '0.7rem', justifyContent: 'center' }}>
+              <Plus size={16} /> Sačuvaj odsustvo
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
