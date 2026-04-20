@@ -166,13 +166,14 @@ export default function Reports() {
   const employeeList = Object.values(groupedByEmployee).map(emp => {
     let totalWorkedMins = 0, totalOvertimeMins = 0, totalLateMins = 0, totalLeaveDays = 0;
     Object.values(emp.days).forEach(day => {
-      const isSunday = new Date(day.date + 'T12:00:00').getDay() === 0;
+      const dayOfWeek = new Date(day.date + 'T12:00:00').getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-      if (day.leaveType && !day.firstEntry && !isSunday) {
+      if (day.leaveType && !day.firstEntry && !isWeekend) {
         // Leave day with no attendance = 8h paid leave
         totalWorkedMins += 480;
         totalLeaveDays++;
-      } else if (day.firstEntry && !isSunday) {
+      } else if (day.firstEntry && !isWeekend) {
         totalWorkedMins += 480;
       }
       if (day.overtimeApproved) totalOvertimeMins += day.overtimeMins || 0;

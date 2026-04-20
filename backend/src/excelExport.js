@@ -154,34 +154,32 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                     if (workedMins < 0) workedMins = 0;
                 }
 
-                const isSunday = new Date(g.date + 'T12:00:00').getDay() === 0;
-                let finalMins = workedMins;
-                let displayVal = 8;
+                const isDateObj = new Date(g.date + 'T12:00:00');
+                const isWeekend = isDateObj.getDay() === 0 || isDateObj.getDay() === 6;
+                let decidedVal = 8;
+                let decidedOvertime = 0;
                 
                 const manual = overtimes.find(o => nameMatch(o.employeeName, emp.firstName, emp.lastName) && o.date === g.date);
                 
-                if (isSunday) {
-                    displayVal = manual && manual.approved ? Math.ceil((manual.approvedMins || workedMins) / 60) : "";
-                } else {
-                    if (manual && manual.approvedMins) {
-                        displayVal = 8 + Math.ceil(manual.approvedMins / 60);
-                    } else if (manual && manual.approved && workedMins > 480) {
-                        displayVal = Math.ceil(workedMins / 60);
+                if (isWeekend) {
+                    decidedVal = "";
+                    if (manual && manual.approved) {
+                        const ovMins = manual.approvedMins !== null ? manual.approvedMins : workedMins;
+                        decidedOvertime = +(ovMins / 60).toFixed(2);
                     } else {
-                        displayVal = 8;
+                        decidedOvertime = 0;
+                    }
+                } else {
+                    if (manual && manual.approved) {
+                        const ovMins = manual.approvedMins !== null ? manual.approvedMins : (workedMins > 480 ? workedMins - 480 : 0);
+                        decidedOvertime = +(ovMins / 60).toFixed(2);
                     }
                 }
 
                 const isNightShift = entryMins >= 1200 || entryMins < 240;
 
-                if (!emp.days[g.date] || isSunday) {
-                    if (manual && manual.approvedMins) {
-                       emp.days[g.date] = { val: 8, overtime: Math.ceil(manual.approvedMins / 60), nightShift: isNightShift };
-                    } else if (manual && manual.approved && workedMins > 480) {
-                       emp.days[g.date] = { val: 8, overtime: Math.ceil(workedMins / 60) - 8, nightShift: isNightShift }; 
-                    } else {
-                       emp.days[g.date] = { val: displayVal, overtime: 0, nightShift: isNightShift };
-                    }
+                if (!emp.days[g.date] || isWeekend) {
+                    emp.days[g.date] = { val: decidedVal, overtime: decidedOvertime, nightShift: isNightShift };
                 }
             }
 
@@ -198,7 +196,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                     // Turn scalar to object
                     emp.days[ov.date] = { val: emp.days[ov.date], overtime: 0 };
                 }
-                emp.days[ov.date].overtime = Math.ceil((ov.approvedMins || 0) / 60);
+                emp.days[ov.date].overtime = +((ov.approvedMins || 0) / 60).toFixed(2);
             }
 
             // Create Excel
@@ -207,7 +205,11 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             
             const mNamesStr = ['', 'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
             const sheetName = `${String(m).padStart(2,'0')}_${y}`;
-            const sheet = workbook.addWorksheet(sheetName);
+            const sheet = workbook.addWorksheet(sheetName, {
+                views: [
+                    { state: 'frozen', xSplit: 2, ySplit: 2 }
+                ]
+            });
 
             // Columns sizing
             sheet.getColumn(1).width = 4;
@@ -219,7 +221,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             sheet.getColumn(7).width = 12;
             sheet.getColumn(8).width = 12;
             for (let i=1; i<=31; i++) {
-                sheet.getColumn(8+i).width = 4.5;
+                sheet.getColumn(8+i).width = 7.0;
             }
             sheet.getColumn(40).width = 12; // sum
             sheet.getColumn(41).width = 15; // prekovremeno
@@ -273,17 +275,24 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             // Data Rows
             let rowIdx = 3;
             empData.forEach((emp, index) => {
-                const rw = sheet.getRow(rowIdx);
-                rw.getCell(1).value = index + 1;
-                rw.getCell(2).value = emp.fullName;
-                rw.getCell(3).value = emp.department;
-                rw.getCell(4).value = emp.position;
+                const rwTop = sheet.getRow(rowIdx);
+                const rwBot = sheet.getRow(rowIdx + 1);
                 
-                // Vacations place holders
-                rw.getCell(5).value = 0;
-                rw.getCell(6).value = 0;
-                rw.getCell(7).value = 0;
-                rw.getCell(8).value = 0;
+                // Merge structural and summary cells
+                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45].forEach(c => {
+                    sheet.mergeCells(rowIdx, c, rowIdx + 1, c);
+                });
+
+                rwTop.getCell(1).value = index + 1;
+                rwTop.getCell(2).value = emp.fullName;
+                rwTop.getCell(3).value = emp.department;
+                rwTop.getCell(4).value = emp.position;
+                
+                // Vacations placeholders
+                rwTop.getCell(5).value = 0;
+                rwTop.getCell(6).value = 0;
+                rwTop.getCell(7).value = 0;
+                rwTop.getCell(8).value = 0;
 
                 let rowSum = 0;
                 let overtimeSum = 0;
@@ -295,19 +304,25 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                 for (let i=1; i<=daysInMonth; i++) {
                     const ds = toDateString(y, m, i);
                     let val = emp.days[ds];
-                    const cell = rw.getCell(8+i);
+                    const cellTop = rwTop.getCell(8+i);
+                    const cellBot = rwBot.getCell(8+i);
                     let isNight = false;
+                    let displayVal = null;
                     
                     if (val) {
-                        let displayVal = val;
+                        displayVal = val;
                         // Handle object for explicit overtime tracking
                         if (typeof val === 'object' && val !== null) {
                             displayVal = val.val;
                             overtimeSum += (val.overtime || 0);
                             isNight = val.nightShift;
+                            
+                            // Render top/bottom
+                            cellTop.value = val.val || "";
+                            cellBot.value = val.overtime > 0 ? val.overtime : "";
+                        } else {
+                            cellTop.value = displayVal;
                         }
-                        
-                        cell.value = displayVal;
                         
                         if (typeof displayVal === 'number') {
                             rowSum += displayVal;
@@ -323,38 +338,47 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                         }
                     }
 
-                    // Weekend coloring
+                    // Background coloring prioritization
                     const dayOfWeek = new Date(y, m-1, i).getDay();
-                    if (isNight) {
-                        // Night shift gets priority yellow highlighting
-                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
-                    } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
-                    }
-                    
-                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
+
+                    [cellTop, cellBot].forEach(cell => {
+                        if (displayVal === 'go' || displayVal === 'ks') {
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF92D050' } }; // Green
+                        } else if (displayVal === 'bo') {
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC000' } }; // Orange
+                        } else if (displayVal === 'sr') {
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } }; // Blue
+                        } else if (isNight) {
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; // Yellow
+                        } else if (isWeekendDay) {
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } }; // Gray
+                        }
+                        
+                        cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    });
                 }
 
-                rw.getCell(40).value = rowSum;
-                rw.getCell(41).value = overtimeSum;
-                rw.getCell(42).value = radnihDana;
-                rw.getCell(43).value = odmorDays;
-                rw.getCell(44).value = bolovanjeDays;
-                rw.getCell(45).value = slobodniDays;
+                rwTop.getCell(40).value = rowSum;
+                rwTop.getCell(41).value = overtimeSum;
+                rwTop.getCell(42).value = radnihDana;
+                rwTop.getCell(43).value = odmorDays;
+                rwTop.getCell(44).value = bolovanjeDays;
+                rwTop.getCell(45).value = slobodniDays;
                 
-                [40,41,42,43,44,45].forEach(c => {
-                   rw.getCell(c).font = { bold: true };
-                   rw.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                   rw.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };
+                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45].forEach(c => {
+                    [rwTop, rwBot].forEach(r => {
+                        r.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                        r.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };
+                    });
                 });
                 
-                // Borders for metadata too
-                for(let c=1; c<=8; c++) {
-                    rw.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                }
+                [40,41,42,43,44,45].forEach(c => {
+                   rwTop.getCell(c).font = { bold: true };
+                });
 
-                rowIdx++;
+                rowIdx += 2;
             });
 
             // Write and send

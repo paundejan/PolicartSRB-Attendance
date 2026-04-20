@@ -480,8 +480,9 @@ app.get('/api/reports/weekly', async (req, res) => {
 
             const workedHours = Math.floor(workedMins / 60);
             const workedRemMins = workedMins % 60;
-            const isSunday = new Date(g.date + 'T12:00:00').getDay() === 0;
-            let overtimeMins = isSunday ? workedMins : (workedMins > 480 ? workedMins - 480 : 0);
+            const dayOfWeek = new Date(g.date + 'T12:00:00').getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            let overtimeMins = isWeekend ? workedMins : (workedMins > 480 ? workedMins - 480 : 0);
 
             // Find employee info
             const empMatch = employees.find(e => nameMatch(g.name, e.firstName, e.lastName));
