@@ -57,6 +57,7 @@ model OvertimeApproval {
   employeeName String
   date         String // YYYY-MM-DD
   approved     Boolean  @default(false)
+  approvedMins Int?
   createdAt    DateTime @default(now())
 
   @@unique([employeeName, date])

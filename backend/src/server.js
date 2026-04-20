@@ -345,7 +345,7 @@ app.get('/api/reports/weekly', async (req, res) => {
             where: { date: { in: reportDates } }
         });
         const approvalMap = {};
-        approvals.forEach(a => { approvalMap[`${a.employeeName}||${a.date}`] = a.approved; });
+        approvals.forEach(a => { approvalMap[`${a.employeeName}||${a.date}`] = a; });
 
         // Fetch leave records for this week
         const leaveRecords = await prisma.leaveRecord.findMany({
@@ -477,7 +477,8 @@ app.get('/api/reports/weekly', async (req, res) => {
 
             const workedHours = Math.floor(workedMins / 60);
             const workedRemMins = workedMins % 60;
-            const overtimeMins = workedMins > 480 ? workedMins - 480 : 0;
+            const isSunday = new Date(g.date + 'T12:00:00').getDay() === 0;
+            let overtimeMins = isSunday ? workedMins : (workedMins > 480 ? workedMins - 480 : 0);
 
             // Find employee info
             const empMatch = employees.find(e => nameMatch(g.name, e.firstName, e.lastName));
@@ -499,9 +500,14 @@ app.get('/api/reports/weekly', async (req, res) => {
                 }
             }
 
-            // Check overtime approval
+            // Check overtime approval and overrides
             const approvalKey = `${g.name}||${g.date}`;
-            const overtimeApproved = approvalMap[approvalKey] || false;
+            const overtimeData = approvalMap[approvalKey];
+            const overtimeApproved = overtimeData ? overtimeData.approved : false;
+            
+            if (overtimeData && overtimeData.approvedMins !== null && overtimeData.approvedMins !== undefined) {
+                overtimeMins = overtimeData.approvedMins;
+            }
 
             reportRows.push({
                 employeeName: g.name,
@@ -566,9 +572,55 @@ app.get('/api/reports/weekly', async (req, res) => {
                 department: empMatch ? empMatch.department : '-',
                 position: empMatch ? empMatch.position : '-'
             });
+            // add to keys so overtime loop doesn't duplicate if it has both
+            attendanceKeys.add(key);
         }
 
-        // Re-sort after adding leave rows
+        // Add standalone overtime rows for ALL employees (if no attendance and no leave but has overtime)
+        for (const ov of approvals) {
+            if (!reportDates.includes(ov.date)) continue;
+            if (!ov.approved && !ov.approvedMins) continue;
+            
+            const key = `${ov.employeeName}||${ov.date}`;
+            if (attendanceKeys.has(key)) {
+                // Pre-existing row (either from attendance or leave)
+                const existing = reportRows.find(r => r.employeeName === ov.employeeName && r.date === ov.date);
+                if (existing && existing.overtimeMins === 0 && !existing.firstEntry) {
+                    existing.overtimeApproved = ov.approved;
+                    existing.overtimeMins = ov.approvedMins || 0;
+                    existing.overtimeFormatted = existing.overtimeMins > 0 ? `${Math.floor(existing.overtimeMins/60)}h ${existing.overtimeMins%60}m` : null;
+                }
+                continue;
+            }
+
+            // Find employee info
+            const empMatch = employees.find(e => nameMatch(ov.employeeName, e.firstName, e.lastName));
+
+            reportRows.push({
+                employeeName: ov.employeeName,
+                date: ov.date,
+                firstEntry: null,
+                lastExit: null,
+                isOvernightSession: false,
+                shiftName: '-',
+                shiftColor: '#6366f1',
+                shiftStart: '-',
+                shiftEnd: '-',
+                workedMins: 0,
+                workedFormatted: '-',
+                overtimeMins: ov.approvedMins || 0,
+                overtimeFormatted: (ov.approvedMins || 0) > 0 ? `${Math.floor(ov.approvedMins/60)}h ${ov.approvedMins%60}m` : null,
+                overtimeApproved: ov.approved,
+                lateMins: 0,
+                status: 'Ručni Unos',
+                leaveType: null,
+                department: empMatch ? empMatch.department : '-',
+                position: empMatch ? empMatch.position : '-'
+            });
+            attendanceKeys.add(key);
+        }
+
+        // Re-sort after adding extra rows
         reportRows.sort((a, b) => a.employeeName.localeCompare(b.employeeName) || a.date.localeCompare(b.date));
 
         res.json({ success: true, data: reportRows, dates: reportDates });
@@ -580,13 +632,15 @@ app.get('/api/reports/weekly', async (req, res) => {
 // API: Toggle overtime approval
 app.post('/api/overtime/approve', async (req, res) => {
     try {
-        const { employeeName, date, approved } = req.body;
+        const { employeeName, date, approved, approvedMins } = req.body;
         if (!employeeName || !date) return res.status(400).json({ success: false, error: 'employeeName i date su obavezni.' });
+
+        const minVal = (approvedMins !== undefined && approvedMins !== null && approvedMins !== '') ? parseInt(approvedMins) : null;
 
         await prisma.overtimeApproval.upsert({
             where: { employeeName_date: { employeeName, date } },
-            update: { approved: !!approved },
-            create: { employeeName, date, approved: !!approved }
+            update: { approved: !!approved, approvedMins: minVal },
+            create: { employeeName, date, approved: !!approved, approvedMins: minVal }
         });
 
         res.json({ success: true });

@@ -161,6 +161,7 @@ exports.Prisma.OvertimeApprovalScalarFieldEnum = {
   employeeName: 'employeeName',
   date: 'date',
   approved: 'approved',
+  approvedMins: 'approvedMins',
   createdAt: 'createdAt'
 };
 

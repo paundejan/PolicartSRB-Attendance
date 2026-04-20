@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2, Palmtree, HeartPulse, CalendarOff, X, Plus } from 'lucide-react';
+import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2, Palmtree, HeartPulse, CalendarOff, X, Plus, Briefcase } from 'lucide-react';
 
 function getMonday(d) {
   d = new Date(d);
@@ -29,7 +29,7 @@ export default function Reports() {
   const [activeTab, setActiveTab] = useState('weekly');
   const [filterDept, setFilterDept] = useState('__all__');
   const [employees, setEmployees] = useState([]);
-  const [leaveModal, setLeaveModal] = useState(null); // { employeeName, date }
+  const [actionModal, setActionModal] = useState(null); // { employeeName, date, tab: 'leave'|'overtime', defaultMins: null }
   const [leaveForm, setLeaveForm] = useState({ leaveType: 'odmor', startDate: '', endDate: '', note: '' });
   const [showBulkLeave, setShowBulkLeave] = useState(false);
   const [bulkLeaveEmp, setBulkLeaveEmp] = useState('');
@@ -88,10 +88,22 @@ export default function Reports() {
     } catch (err) { console.error(err); }
   };
 
+  const saveOvertimeMins = async (employeeName, date, approvedMins) => {
+    try {
+      await fetch('http://localhost:3001/api/overtime/approve', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeName, date, approved: true, approvedMins })
+      });
+      setActionModal(null);
+      fetchWeeklyReport();
+    } catch (err) { console.error(err); }
+  };
+
   const LEAVE_CONFIG = {
     odmor:        { label: 'Odmor',        icon: Palmtree,   color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
     bolovanje:    { label: 'Bolovanje',    icon: HeartPulse, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
     slobodan_dan: { label: 'Slobodan dan', icon: CalendarOff, color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
+    rad_8h:       { label: 'Rad (8h)',     icon: Briefcase,  color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
   };
 
   const assignLeave = async (employeeName, date, leaveType) => {
@@ -100,12 +112,13 @@ export default function Reports() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employeeName, startDate: date, leaveType })
       });
-      setLeaveModal(null);
+      setActionModal(null);
       fetchWeeklyReport();
     } catch (err) { console.error(err); }
   };
 
   const removeLeave = async (employeeName, date) => {
+    if (!window.confirm(`Da li ste sigurni da želite da obrišete ovaj unos za ${employeeName}?`)) return;
     try {
       await fetch('http://localhost:3001/api/leave', {
         method: 'DELETE', headers: { 'Content-Type': 'application/json' },
@@ -145,11 +158,13 @@ export default function Reports() {
   const employeeList = Object.values(groupedByEmployee).map(emp => {
     let totalWorkedMins = 0, totalOvertimeMins = 0, totalLateMins = 0, totalLeaveDays = 0;
     Object.values(emp.days).forEach(day => {
-      if (day.leaveType && !day.firstEntry) {
+      const isSunday = new Date(day.date + 'T12:00:00').getDay() === 0;
+
+      if (day.leaveType && !day.firstEntry && !isSunday) {
         // Leave day with no attendance = 8h paid leave
         totalWorkedMins += 480;
         totalLeaveDays++;
-      } else if (day.firstEntry) {
+      } else if (day.firstEntry && !isSunday) {
         totalWorkedMins += 480;
       }
       if (day.overtimeApproved) totalOvertimeMins += day.overtimeMins || 0;
@@ -273,7 +288,7 @@ export default function Reports() {
           </div>
 
           {/* Table */}
-          <div className="glass-panel" style={{ overflow: 'auto' }}>
+          <div className="glass-panel" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: 'calc(100vw - 280px)' }}>
             {weeklyLoading ? (
               <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Učitavanje...</div>
             ) : filteredEmployees.length === 0 ? (
@@ -335,10 +350,10 @@ export default function Reports() {
                           </td>
                           {weeklyDates.map(date => {
                             const d = emp.days[date];
-                            // Empty cell — clickable to assign leave
+                            // Empty cell — clickable to assign leave or overtime
                             if (!d) return (
                               <td key={date} style={{ padding: '0.3rem', textAlign: 'center', cursor: 'pointer', position: 'relative' }}
-                                onClick={() => setLeaveModal({ employeeName: emp.name, date })}>
+                                onClick={() => setActionModal({ employeeName: emp.name, date, tab: 'overtime', defaultMins: '' })}>
                                 <span style={{ color: 'var(--text-muted)', opacity: 0.3, fontSize: '0.8rem' }}>—</span>
                               </td>
                             );
@@ -354,7 +369,8 @@ export default function Reports() {
                                       <LeaveIcon size={12} color={lc.color} />
                                       <span style={{ fontSize: '0.7rem', fontWeight: 700, color: lc.color }}>{lc.label}</span>
                                     </div>
-                                    <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>8h</span>
+                                    {d.leaveType !== 'rad_8h' && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>8h</span>}
+                                    {d.leaveType === 'rad_8h' && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Regularan Rad</span>}
                                   </div>
                                 </td>
                               );
@@ -372,13 +388,21 @@ export default function Reports() {
                                     <span style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '2px' }}><LogOut size={10} /> {d.lastExit ? d.lastExit.substring(0, 5) : '-'}</span>
                                   </div>
                                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{d.workedFormatted}</span>
-                                  {d.overtimeMins > 0 && (
+                                  {/* Normal Overtime display block */}
+                                  {d.overtimeMins > 0 && d.status !== 'Ručni Unos' && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '1px 6px', borderRadius: '6px', background: d.overtimeApproved ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${d.overtimeApproved ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}` }}>
                                       <input type="checkbox" checked={d.overtimeApproved} onChange={() => toggleOvertime(d.employeeName, d.date, d.overtimeApproved)} style={{ width: '13px', height: '13px', cursor: 'pointer', accentColor: 'var(--success)' }} title={d.overtimeApproved ? 'Prihvaćeno' : 'Prihvati prekovremeno'} />
-                                      <span style={{ fontSize: '0.65rem', fontWeight: 700, color: d.overtimeApproved ? 'var(--success)' : 'var(--warning)' }}>+{d.overtimeFormatted}</span>
+                                      <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins })} style={{ fontSize: '0.65rem', fontWeight: 700, color: d.overtimeApproved ? 'var(--success)' : 'var(--warning)', cursor: 'pointer' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
                                     </div>
                                   )}
-                                  <StatusBadge status={d.status} />
+                                  {/* Special visual block for manual overtime record (where no attendance exists) */}
+                                  {d.status === 'Ručni Unos' && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(16,185,129,0.15)', border: `1px solid rgba(16,185,129,0.4)` }}>
+                                      <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--success)' }}>Prekovr. (ručno)</span>
+                                      <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins })} style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--success)', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', padding:'1px 5px', borderRadius:'4px' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
+                                    </div>
+                                  )}
+                                  {d.status !== 'Ručni Unos' && <StatusBadge status={d.status} />}
                                 </div>
                               </td>
                             );
@@ -427,37 +451,74 @@ export default function Reports() {
       )}
     </div>
 
-      <LeavePopup />
+      <ActionModal />
       <BulkLeaveModal />
     </>
   );
 
-  // Leave assignment popup (single day)
-  function LeavePopup() {
-    if (!leaveModal) return null;
+  // Unified popup for Leave and Overtime
+  function ActionModal() {
+    if (!actionModal) return null;
+    
+    // local state for overtime inputs
+    const [h, setH] = useState(actionModal.defaultMins ? Math.floor(actionModal.defaultMins / 60) : 0);
+    const [m, setM] = useState(actionModal.defaultMins ? actionModal.defaultMins % 60 : 0);
+
+    const isLeave = actionModal.tab === 'leave';
+
     return (
       <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        onClick={() => setLeaveModal(null)}>
-        <div style={{ background: '#1e293b', border: '1px solid var(--surface-border)', borderRadius: '16px', padding: '1.5rem', minWidth: '300px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+        onClick={() => setActionModal(null)}>
+        <div style={{ background: '#1e293b', border: '1px solid var(--surface-border)', borderRadius: '16px', padding: '1.5rem', minWidth: '320px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
           onClick={e => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem' }}>Dodeli odsustvo</h3>
-            <button onClick={() => setLeaveModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+            <h3 style={{ margin: 0, fontSize: '1rem' }}>Unos Akcije</h3>
+            <button onClick={() => setActionModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
           </div>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0 0 1rem' }}>
-            {leaveModal.employeeName} — {toDMY(leaveModal.date)}
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0 0 1rem', display: 'flex', justifyContent: 'space-between' }}>
+            <span>{actionModal.employeeName}</span>
+            <span>{toDMY(actionModal.date)}</span>
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {Object.entries(LEAVE_CONFIG).map(([key, cfg]) => {
-              const Icon = cfg.icon;
-              return (
-                <button key={key} onClick={() => assignLeave(leaveModal.employeeName, leaveModal.date, key)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', borderRadius: '10px', border: `1px solid ${cfg.color}44`, background: cfg.bg, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.9rem', fontWeight: 600, color: cfg.color }}>
-                  <Icon size={16} /> {cfg.label}
-                </button>
-              );
-            })}
+
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', borderBottom: '1px solid var(--surface-border)', paddingBottom: '0.5rem' }}>
+            <button onClick={() => setActionModal({ ...actionModal, tab: 'overtime' })} style={{ flex: 1, padding: '0.5rem', background: !isLeave ? 'var(--primary-color)' : 'transparent', color: !isLeave ? 'white' : 'var(--text-muted)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Prekovremeno</button>
+            <button onClick={() => setActionModal({ ...actionModal, tab: 'leave' })} style={{ flex: 1, padding: '0.5rem', background: isLeave ? 'var(--primary-color)' : 'transparent', color: isLeave ? 'white' : 'var(--text-muted)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Odsustvo</button>
           </div>
+
+          {!isLeave ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <label style={{ flex: 1, display: 'flex', flexDirection: 'column', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Sati
+                  <input type="number" min="0" value={h} onChange={e => setH(Number(e.target.value))} className="input-glass" style={{ marginTop: '0.3rem', textAlign: 'center' }} />
+                </label>
+                <label style={{ flex: 1, display: 'flex', flexDirection: 'column', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Minuti
+                  <input type="number" min="0" max="59" value={m} onChange={e => setM(Number(e.target.value))} className="input-glass" style={{ marginTop: '0.3rem', textAlign: 'center' }} />
+                </label>
+              </div>
+              <button onClick={() => saveOvertimeMins(actionModal.employeeName, actionModal.date, h * 60 + m)} className="btn-success" style={{ padding: '0.6rem', justifyContent: 'center' }}>
+                <CheckCircle size={16} /> Sačuvaj i odobri
+              </button>
+              {actionModal.defaultMins > 0 && (
+                <button onClick={() => saveOvertimeMins(actionModal.employeeName, actionModal.date, null)} style={{ padding: '0.4rem', border: 'none', background: 'transparent', color: 'var(--danger)', fontSize: '0.8rem', cursor: 'pointer' }}>
+                  Poništi ručni unos
+                </button>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {Object.entries(LEAVE_CONFIG).map(([key, cfg]) => {
+                const Icon = cfg.icon;
+                return (
+                  <button key={key} onClick={() => assignLeave(actionModal.employeeName, actionModal.date, key)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', borderRadius: '10px', border: `1px solid ${cfg.color}44`, background: cfg.bg, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.9rem', fontWeight: 600, color: cfg.color }}>
+                    <Icon size={16} /> {cfg.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     );

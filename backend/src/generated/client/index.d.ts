@@ -5524,10 +5524,12 @@ export namespace Prisma {
 
   export type OvertimeApprovalAvgAggregateOutputType = {
     id: number | null
+    approvedMins: number | null
   }
 
   export type OvertimeApprovalSumAggregateOutputType = {
     id: number | null
+    approvedMins: number | null
   }
 
   export type OvertimeApprovalMinAggregateOutputType = {
@@ -5535,6 +5537,7 @@ export namespace Prisma {
     employeeName: string | null
     date: string | null
     approved: boolean | null
+    approvedMins: number | null
     createdAt: Date | null
   }
 
@@ -5543,6 +5546,7 @@ export namespace Prisma {
     employeeName: string | null
     date: string | null
     approved: boolean | null
+    approvedMins: number | null
     createdAt: Date | null
   }
 
@@ -5551,6 +5555,7 @@ export namespace Prisma {
     employeeName: number
     date: number
     approved: number
+    approvedMins: number
     createdAt: number
     _all: number
   }
@@ -5558,10 +5563,12 @@ export namespace Prisma {
 
   export type OvertimeApprovalAvgAggregateInputType = {
     id?: true
+    approvedMins?: true
   }
 
   export type OvertimeApprovalSumAggregateInputType = {
     id?: true
+    approvedMins?: true
   }
 
   export type OvertimeApprovalMinAggregateInputType = {
@@ -5569,6 +5576,7 @@ export namespace Prisma {
     employeeName?: true
     date?: true
     approved?: true
+    approvedMins?: true
     createdAt?: true
   }
 
@@ -5577,6 +5585,7 @@ export namespace Prisma {
     employeeName?: true
     date?: true
     approved?: true
+    approvedMins?: true
     createdAt?: true
   }
 
@@ -5585,6 +5594,7 @@ export namespace Prisma {
     employeeName?: true
     date?: true
     approved?: true
+    approvedMins?: true
     createdAt?: true
     _all?: true
   }
@@ -5680,6 +5690,7 @@ export namespace Prisma {
     employeeName: string
     date: string
     approved: boolean
+    approvedMins: number | null
     createdAt: Date
     _count: OvertimeApprovalCountAggregateOutputType | null
     _avg: OvertimeApprovalAvgAggregateOutputType | null
@@ -5707,6 +5718,7 @@ export namespace Prisma {
     employeeName?: boolean
     date?: boolean
     approved?: boolean
+    approvedMins?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["overtimeApproval"]>
 
@@ -5715,6 +5727,7 @@ export namespace Prisma {
     employeeName?: boolean
     date?: boolean
     approved?: boolean
+    approvedMins?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["overtimeApproval"]>
 
@@ -5723,6 +5736,7 @@ export namespace Prisma {
     employeeName?: boolean
     date?: boolean
     approved?: boolean
+    approvedMins?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["overtimeApproval"]>
 
@@ -5731,10 +5745,11 @@ export namespace Prisma {
     employeeName?: boolean
     date?: boolean
     approved?: boolean
+    approvedMins?: boolean
     createdAt?: boolean
   }
 
-  export type OvertimeApprovalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeName" | "date" | "approved" | "createdAt", ExtArgs["result"]["overtimeApproval"]>
+  export type OvertimeApprovalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeName" | "date" | "approved" | "approvedMins" | "createdAt", ExtArgs["result"]["overtimeApproval"]>
 
   export type $OvertimeApprovalPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "OvertimeApproval"
@@ -5744,6 +5759,7 @@ export namespace Prisma {
       employeeName: string
       date: string
       approved: boolean
+      approvedMins: number | null
       createdAt: Date
     }, ExtArgs["result"]["overtimeApproval"]>
     composites: {}
@@ -6172,6 +6188,7 @@ export namespace Prisma {
     readonly employeeName: FieldRef<"OvertimeApproval", 'String'>
     readonly date: FieldRef<"OvertimeApproval", 'String'>
     readonly approved: FieldRef<"OvertimeApproval", 'Boolean'>
+    readonly approvedMins: FieldRef<"OvertimeApproval", 'Int'>
     readonly createdAt: FieldRef<"OvertimeApproval", 'DateTime'>
   }
     
@@ -7643,6 +7660,7 @@ export namespace Prisma {
     employeeName: 'employeeName',
     date: 'date',
     approved: 'approved',
+    approvedMins: 'approvedMins',
     createdAt: 'createdAt'
   };
 
@@ -7975,6 +7993,7 @@ export namespace Prisma {
     employeeName?: StringFilter<"OvertimeApproval"> | string
     date?: StringFilter<"OvertimeApproval"> | string
     approved?: BoolFilter<"OvertimeApproval"> | boolean
+    approvedMins?: IntNullableFilter<"OvertimeApproval"> | number | null
     createdAt?: DateTimeFilter<"OvertimeApproval"> | Date | string
   }
 
@@ -7983,6 +8002,7 @@ export namespace Prisma {
     employeeName?: SortOrder
     date?: SortOrder
     approved?: SortOrder
+    approvedMins?: SortOrderInput | SortOrder
     createdAt?: SortOrder
   }
 
@@ -7995,6 +8015,7 @@ export namespace Prisma {
     employeeName?: StringFilter<"OvertimeApproval"> | string
     date?: StringFilter<"OvertimeApproval"> | string
     approved?: BoolFilter<"OvertimeApproval"> | boolean
+    approvedMins?: IntNullableFilter<"OvertimeApproval"> | number | null
     createdAt?: DateTimeFilter<"OvertimeApproval"> | Date | string
   }, "id" | "employeeName_date">
 
@@ -8003,6 +8024,7 @@ export namespace Prisma {
     employeeName?: SortOrder
     date?: SortOrder
     approved?: SortOrder
+    approvedMins?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: OvertimeApprovalCountOrderByAggregateInput
     _avg?: OvertimeApprovalAvgOrderByAggregateInput
@@ -8019,6 +8041,7 @@ export namespace Prisma {
     employeeName?: StringWithAggregatesFilter<"OvertimeApproval"> | string
     date?: StringWithAggregatesFilter<"OvertimeApproval"> | string
     approved?: BoolWithAggregatesFilter<"OvertimeApproval"> | boolean
+    approvedMins?: IntNullableWithAggregatesFilter<"OvertimeApproval"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"OvertimeApproval"> | Date | string
   }
 
@@ -8340,6 +8363,7 @@ export namespace Prisma {
     employeeName: string
     date: string
     approved?: boolean
+    approvedMins?: number | null
     createdAt?: Date | string
   }
 
@@ -8348,6 +8372,7 @@ export namespace Prisma {
     employeeName: string
     date: string
     approved?: boolean
+    approvedMins?: number | null
     createdAt?: Date | string
   }
 
@@ -8355,6 +8380,7 @@ export namespace Prisma {
     employeeName?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedMins?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8363,6 +8389,7 @@ export namespace Prisma {
     employeeName?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedMins?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8371,6 +8398,7 @@ export namespace Prisma {
     employeeName: string
     date: string
     approved?: boolean
+    approvedMins?: number | null
     createdAt?: Date | string
   }
 
@@ -8378,6 +8406,7 @@ export namespace Prisma {
     employeeName?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedMins?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8386,6 +8415,7 @@ export namespace Prisma {
     employeeName?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     approved?: BoolFieldUpdateOperationsInput | boolean
+    approvedMins?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8738,6 +8768,17 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type OvertimeApprovalEmployeeNameDateCompoundUniqueInput = {
     employeeName: string
     date: string
@@ -8748,11 +8789,13 @@ export namespace Prisma {
     employeeName?: SortOrder
     date?: SortOrder
     approved?: SortOrder
+    approvedMins?: SortOrder
     createdAt?: SortOrder
   }
 
   export type OvertimeApprovalAvgOrderByAggregateInput = {
     id?: SortOrder
+    approvedMins?: SortOrder
   }
 
   export type OvertimeApprovalMaxOrderByAggregateInput = {
@@ -8760,6 +8803,7 @@ export namespace Prisma {
     employeeName?: SortOrder
     date?: SortOrder
     approved?: SortOrder
+    approvedMins?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8768,11 +8812,29 @@ export namespace Prisma {
     employeeName?: SortOrder
     date?: SortOrder
     approved?: SortOrder
+    approvedMins?: SortOrder
     createdAt?: SortOrder
   }
 
   export type OvertimeApprovalSumOrderByAggregateInput = {
     id?: SortOrder
+    approvedMins?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type LeaveRecordEmployeeNameDateCompoundUniqueInput = {
@@ -8837,6 +8899,14 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -8986,6 +9056,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
 
