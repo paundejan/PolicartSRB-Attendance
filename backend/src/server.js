@@ -340,7 +340,8 @@ app.get('/api/reports/weekly', async (req, res) => {
         });
 
         const shifts = await prisma.shift.findMany();
-        const employees = await prisma.employee.findMany();
+        let employees = await prisma.employee.findMany();
+        employees = employees.filter(e => e.isActive === true);
 
         // Fetch existing overtime approvals for this week
         const approvals = await prisma.overtimeApproval.findMany({
@@ -484,6 +485,7 @@ app.get('/api/reports/weekly', async (req, res) => {
 
             // Find employee info
             const empMatch = employees.find(e => nameMatch(g.name, e.firstName, e.lastName));
+            if (!empMatch) continue; // Skip attendance if employee is deleted or unmapped
 
             // Check lateness
             let status = 'Nepoznato';
@@ -503,7 +505,8 @@ app.get('/api/reports/weekly', async (req, res) => {
             }
 
             // Check overtime approval and overrides
-            const approvalKey = `${g.name}||${g.date}`;
+            const uniformName = `${empMatch.firstName} ${empMatch.lastName}`;
+            const approvalKey = `${uniformName}||${g.date}`;
             const overtimeData = approvalMap[approvalKey];
             const overtimeApproved = overtimeData ? overtimeData.approved : false;
             
@@ -512,7 +515,7 @@ app.get('/api/reports/weekly', async (req, res) => {
             }
 
             reportRows.push({
-                employeeName: g.name,
+                employeeName: uniformName,
                 date: g.date,
                 firstEntry,
                 lastExit: lastExit,
@@ -542,19 +545,22 @@ app.get('/api/reports/weekly', async (req, res) => {
 
         for (const lr of leaveRecords) {
             if (!reportDates.includes(lr.date)) continue;
-            const key = `${lr.employeeName}||${lr.date}`;
+            
+            // Find employee info
+            const empMatch = employees.find(e => nameMatch(lr.employeeName, e.firstName, e.lastName));
+            if (!empMatch) continue; // Skip leaves if employee is deleted or unmapped
+            
+            const uniformName = `${empMatch.firstName} ${empMatch.lastName}`;
+            const key = `${uniformName}||${lr.date}`;
             if (attendanceKeys.has(key)) {
                 // Employee has attendance AND leave on same day — just tag the existing row
-                const existing = reportRows.find(r => r.employeeName === lr.employeeName && r.date === lr.date);
+                const existing = reportRows.find(r => r.employeeName === uniformName && r.date === lr.date);
                 if (existing) existing.leaveType = lr.leaveType;
                 continue;
             }
 
-            // Find employee info
-            const empMatch = employees.find(e => nameMatch(lr.employeeName, e.firstName, e.lastName));
-
             reportRows.push({
-                employeeName: lr.employeeName,
+                employeeName: uniformName,
                 date: lr.date,
                 firstEntry: null,
                 lastExit: null,
@@ -583,10 +589,15 @@ app.get('/api/reports/weekly', async (req, res) => {
             if (!reportDates.includes(ov.date)) continue;
             if (!ov.approved && !ov.approvedMins) continue;
             
-            const key = `${ov.employeeName}||${ov.date}`;
+            // Find employee info
+            const empMatch = employees.find(e => nameMatch(ov.employeeName, e.firstName, e.lastName));
+            if (!empMatch) continue; // Skip overtimes if employee is deleted or unmapped
+
+            const uniformName = `${empMatch.firstName} ${empMatch.lastName}`;
+            const key = `${uniformName}||${ov.date}`;
             if (attendanceKeys.has(key)) {
                 // Pre-existing row (either from attendance or leave)
-                const existing = reportRows.find(r => r.employeeName === ov.employeeName && r.date === ov.date);
+                const existing = reportRows.find(r => r.employeeName === uniformName && r.date === ov.date);
                 if (existing && existing.overtimeMins === 0 && !existing.firstEntry) {
                     existing.overtimeApproved = ov.approved;
                     existing.overtimeMins = ov.approvedMins || 0;
@@ -595,11 +606,8 @@ app.get('/api/reports/weekly', async (req, res) => {
                 continue;
             }
 
-            // Find employee info
-            const empMatch = employees.find(e => nameMatch(ov.employeeName, e.firstName, e.lastName));
-
             reportRows.push({
-                employeeName: ov.employeeName,
+                employeeName: uniformName,
                 date: ov.date,
                 firstEntry: null,
                 lastExit: null,

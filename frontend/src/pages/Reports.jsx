@@ -148,6 +148,13 @@ export default function Reports() {
 
   // Group by employee
   const groupedByEmployee = {};
+  
+  // Seed with all employees first so those with 0 attendance also appear
+  employees.forEach(emp => {
+    const fullName = `${emp.firstName} ${emp.lastName}`;
+    groupedByEmployee[fullName] = { name: fullName, department: emp.department || '-', position: emp.position || '-', days: {} };
+  });
+
   weeklyData.forEach(row => {
     if (!groupedByEmployee[row.employeeName]) {
       groupedByEmployee[row.employeeName] = { name: row.employeeName, department: row.department, position: row.position, days: {} };

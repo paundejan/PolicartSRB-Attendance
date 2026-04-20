@@ -3385,6 +3385,7 @@ export namespace Prisma {
     department: string | null
     position: string | null
     email: string | null
+    isActive: boolean | null
     createdAt: Date | null
   }
 
@@ -3396,6 +3397,7 @@ export namespace Prisma {
     department: string | null
     position: string | null
     email: string | null
+    isActive: boolean | null
     createdAt: Date | null
   }
 
@@ -3407,6 +3409,7 @@ export namespace Prisma {
     department: number
     position: number
     email: number
+    isActive: number
     createdAt: number
     _all: number
   }
@@ -3428,6 +3431,7 @@ export namespace Prisma {
     department?: true
     position?: true
     email?: true
+    isActive?: true
     createdAt?: true
   }
 
@@ -3439,6 +3443,7 @@ export namespace Prisma {
     department?: true
     position?: true
     email?: true
+    isActive?: true
     createdAt?: true
   }
 
@@ -3450,6 +3455,7 @@ export namespace Prisma {
     department?: true
     position?: true
     email?: true
+    isActive?: true
     createdAt?: true
     _all?: true
   }
@@ -3548,6 +3554,7 @@ export namespace Prisma {
     department: string | null
     position: string | null
     email: string | null
+    isActive: boolean
     createdAt: Date
     _count: EmployeeCountAggregateOutputType | null
     _avg: EmployeeAvgAggregateOutputType | null
@@ -3578,6 +3585,7 @@ export namespace Prisma {
     department?: boolean
     position?: boolean
     email?: boolean
+    isActive?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["employee"]>
 
@@ -3589,6 +3597,7 @@ export namespace Prisma {
     department?: boolean
     position?: boolean
     email?: boolean
+    isActive?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["employee"]>
 
@@ -3600,6 +3609,7 @@ export namespace Prisma {
     department?: boolean
     position?: boolean
     email?: boolean
+    isActive?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["employee"]>
 
@@ -3611,10 +3621,11 @@ export namespace Prisma {
     department?: boolean
     position?: boolean
     email?: boolean
+    isActive?: boolean
     createdAt?: boolean
   }
 
-  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeId" | "firstName" | "lastName" | "department" | "position" | "email" | "createdAt", ExtArgs["result"]["employee"]>
+  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeId" | "firstName" | "lastName" | "department" | "position" | "email" | "isActive" | "createdAt", ExtArgs["result"]["employee"]>
 
   export type $EmployeePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Employee"
@@ -3627,6 +3638,7 @@ export namespace Prisma {
       department: string | null
       position: string | null
       email: string | null
+      isActive: boolean
       createdAt: Date
     }, ExtArgs["result"]["employee"]>
     composites: {}
@@ -4058,6 +4070,7 @@ export namespace Prisma {
     readonly department: FieldRef<"Employee", 'String'>
     readonly position: FieldRef<"Employee", 'String'>
     readonly email: FieldRef<"Employee", 'String'>
+    readonly isActive: FieldRef<"Employee", 'Boolean'>
     readonly createdAt: FieldRef<"Employee", 'DateTime'>
   }
     
@@ -7634,6 +7647,7 @@ export namespace Prisma {
     department: 'department',
     position: 'position',
     email: 'email',
+    isActive: 'isActive',
     createdAt: 'createdAt'
   };
 
@@ -7853,6 +7867,7 @@ export namespace Prisma {
     department?: StringNullableFilter<"Employee"> | string | null
     position?: StringNullableFilter<"Employee"> | string | null
     email?: StringNullableFilter<"Employee"> | string | null
+    isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
   }
 
@@ -7864,6 +7879,7 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     position?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7878,6 +7894,7 @@ export namespace Prisma {
     lastName?: StringFilter<"Employee"> | string
     department?: StringNullableFilter<"Employee"> | string | null
     position?: StringNullableFilter<"Employee"> | string | null
+    isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
   }, "id" | "employeeId" | "email">
 
@@ -7889,6 +7906,7 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     position?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     _count?: EmployeeCountOrderByAggregateInput
     _avg?: EmployeeAvgOrderByAggregateInput
@@ -7908,6 +7926,7 @@ export namespace Prisma {
     department?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     position?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     email?: StringNullableWithAggregatesFilter<"Employee"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Employee"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
   }
 
@@ -8211,6 +8230,7 @@ export namespace Prisma {
     department?: string | null
     position?: string | null
     email?: string | null
+    isActive?: boolean
     createdAt?: Date | string
   }
 
@@ -8222,6 +8242,7 @@ export namespace Prisma {
     department?: string | null
     position?: string | null
     email?: string | null
+    isActive?: boolean
     createdAt?: Date | string
   }
 
@@ -8232,6 +8253,7 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     position?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8243,6 +8265,7 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     position?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8254,6 +8277,7 @@ export namespace Prisma {
     department?: string | null
     position?: string | null
     email?: string | null
+    isActive?: boolean
     createdAt?: Date | string
   }
 
@@ -8264,6 +8288,7 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     position?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8275,6 +8300,7 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     position?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8644,6 +8670,11 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -8657,6 +8688,7 @@ export namespace Prisma {
     department?: SortOrder
     position?: SortOrder
     email?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8672,6 +8704,7 @@ export namespace Prisma {
     department?: SortOrder
     position?: SortOrder
     email?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8683,6 +8716,7 @@ export namespace Prisma {
     department?: SortOrder
     position?: SortOrder
     email?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8707,9 +8741,12 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ShiftCountOrderByAggregateInput = {
@@ -8758,14 +8795,6 @@ export namespace Prisma {
     id?: SortOrder
     maxBreakMins?: SortOrder
     toleranceMins?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -9017,6 +9046,11 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -9043,11 +9077,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {

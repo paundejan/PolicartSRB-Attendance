@@ -43,7 +43,8 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             const startDateStr = toDateString(y, m, 1);
             const endDateStr = toDateString(y, m, daysInMonth);
 
-            const employees = await prisma.employee.findMany({ orderBy: [{ department: 'asc' }, { lastName: 'asc' }] });
+            let employees = await prisma.employee.findMany({ orderBy: [{ department: 'asc' }, { lastName: 'asc' }] });
+            employees = employees.filter(e => e.isActive === true);
             const attendance = await prisma.attendanceRecord.findMany({
                 where: { date: { gte: startDateStr, lte: endDateStr } },
                 orderBy: [{ date: 'asc' }, { timestamp: 'asc' }]
@@ -60,7 +61,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                 id: e.id,
                 firstName: e.firstName,
                 lastName: e.lastName,
-                fullName: `${e.lastName} ${e.firstName}`,
+                fullName: `${e.firstName} ${e.lastName}`,
                 department: e.department || '-',
                 position: e.position || '-',
                 days: {} // date -> val (8, 'go', OVERTIME_HOURS)
@@ -222,8 +223,10 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             }
             sheet.getColumn(40).width = 12; // sum
             sheet.getColumn(41).width = 15; // prekovremeno
-            sheet.getColumn(42).width = 12; // bolovanje
-            sheet.getColumn(43).width = 15; // slobodni dan
+            sheet.getColumn(42).width = 12; // radnih dana
+            sheet.getColumn(43).width = 12; // dani odmora
+            sheet.getColumn(44).width = 12; // bolovanje
+            sheet.getColumn(45).width = 15; // slobodni dan
 
             // Row 1: Headers and Merged Month
             const r1 = sheet.getRow(1);
@@ -242,8 +245,10 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
             r1.getCell(40).value = 'Ukupno sati';
             r1.getCell(41).value = 'Prekovremeno';
-            r1.getCell(42).value = 'Bolovanje (dani)';
-            r1.getCell(43).value = 'Slobodni dani';
+            r1.getCell(42).value = 'radnih dana';
+            r1.getCell(43).value = 'dani odmora';
+            r1.getCell(44).value = 'Bolovanje (dani)';
+            r1.getCell(45).value = 'Slobodni dani';
 
             // Row 2: Days
             const r2 = sheet.getRow(2);
@@ -255,7 +260,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             [1, 2].forEach(rn => {
                 sheet.getRow(rn).eachCell({ includeEmpty: true }, (c, colNumber) => {
                     // Only style columns that are part of the table
-                    if (colNumber > 43) return;
+                    if (colNumber > 45) return;
                     c.font = { bold: true };
                     c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                     c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
@@ -282,6 +287,8 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
                 let rowSum = 0;
                 let overtimeSum = 0;
+                let radnihDana = 0;
+                let odmorDays = 0;
                 let bolovanjeDays = 0;
                 let slobodniDays = 0;
 
@@ -304,8 +311,10 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                         
                         if (typeof displayVal === 'number') {
                             rowSum += displayVal;
+                            if (displayVal > 0) radnihDana++;
                         } else if (displayVal === 'go' || displayVal === 'ks') {
                             rowSum += 8;
+                            if (displayVal === 'go') odmorDays++;
                         } else if (displayVal === 'bo') {
                             rowSum += 8;
                             bolovanjeDays++;
@@ -329,10 +338,12 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
                 rw.getCell(40).value = rowSum;
                 rw.getCell(41).value = overtimeSum;
-                rw.getCell(42).value = bolovanjeDays;
-                rw.getCell(43).value = slobodniDays;
+                rw.getCell(42).value = radnihDana;
+                rw.getCell(43).value = odmorDays;
+                rw.getCell(44).value = bolovanjeDays;
+                rw.getCell(45).value = slobodniDays;
                 
-                [40,41,42,43].forEach(c => {
+                [40,41,42,43,44,45].forEach(c => {
                    rw.getCell(c).font = { bold: true };
                    rw.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                    rw.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };

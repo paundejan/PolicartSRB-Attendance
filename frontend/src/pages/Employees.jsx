@@ -68,6 +68,17 @@ export default function Employees() {
     catch (e) { console.error("Delete failed", e); }
   };
 
+  const toggleActive = async (emp) => {
+    try {
+      await fetch(`http://localhost:3001/api/employees/${emp.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !emp.isActive })
+      });
+      fetchEmployees();
+    } catch (e) { console.error("Toggle active failed", e); }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -173,6 +184,7 @@ export default function Employees() {
               <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Prezime</th>
               <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Odsek</th>
               <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>Pozicija</th>
+              <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center' }}>Aktivan</th>
               <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-muted)', textAlign: 'right' }}>Akcije</th>
             </tr>
           </thead>
@@ -183,7 +195,7 @@ export default function Employees() {
               <tr><td colSpan={bulkMode ? 8 : 7} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Nema zaposlenih u bazi.</td></tr>
             ) : (
               employees.map((emp) => (
-                <tr key={emp.id} style={{ borderBottom: '1px solid var(--surface-border)', transition: 'var(--transition)', background: selectedIds.has(emp.id) ? 'rgba(99,102,241,0.08)' : 'transparent' }}
+                <tr key={emp.id} style={{ borderBottom: '1px solid var(--surface-border)', transition: 'var(--transition)', background: selectedIds.has(emp.id) ? 'rgba(99,102,241,0.08)' : (emp.isActive ? 'transparent' : 'rgba(0,0,0,0.2)'), opacity: emp.isActive ? 1 : 0.6 }}
                     onMouseEnter={e => { if (!selectedIds.has(emp.id)) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'; }}
                     onMouseLeave={e => { if (!selectedIds.has(emp.id)) e.currentTarget.style.backgroundColor = 'transparent'; }}>
                   {bulkMode && (
@@ -196,6 +208,9 @@ export default function Employees() {
                   <td style={{ padding: '1rem' }}>{emp.lastName}</td>
                   <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{emp.department || '-'}</td>
                   <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{emp.position || '-'}</td>
+                  <td style={{ padding: '1rem', textAlign: 'center' }}>
+                    <input type="checkbox" checked={emp.isActive} onChange={() => toggleActive(emp)} style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--success-color, #10b981)' }} />
+                  </td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
                     <button onClick={() => openEditModal(emp)} style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', marginRight: '1rem' }}><Pencil size={18} /></button>
                     <button onClick={() => handleDelete(emp.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}><Trash2 size={18} /></button>
