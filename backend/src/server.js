@@ -21,6 +21,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const { initCronJobs } = require('./cron');
+const attachExcelEndpoint = require('./excelExport');
+attachExcelEndpoint(app, prisma);
 
 // Init Cron
 initCronJobs();

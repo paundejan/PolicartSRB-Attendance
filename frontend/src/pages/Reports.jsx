@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2, Palmtree, HeartPulse, CalendarOff, X, Plus, Briefcase } from 'lucide-react';
+import { Download, Calendar, ChevronLeft, ChevronRight, Clock, LogIn, LogOut, AlertTriangle, CheckCircle, ShieldAlert, Timer, Moon, Building2, Palmtree, HeartPulse, CalendarOff, X, Plus, Briefcase, FileSpreadsheet } from 'lucide-react';
 
 function getMonday(d) {
   d = new Date(d);
@@ -30,6 +30,7 @@ export default function Reports() {
   const [filterDept, setFilterDept] = useState('__all__');
   const [employees, setEmployees] = useState([]);
   const [actionModal, setActionModal] = useState(null); // { employeeName, date, tab: 'leave'|'overtime', defaultMins: null }
+  const [excelMonth, setExcelMonth] = useState(() => toISO(new Date()).substring(0, 7));
   const [leaveForm, setLeaveForm] = useState({ leaveType: 'odmor', startDate: '', endDate: '', note: '' });
   const [showBulkLeave, setShowBulkLeave] = useState(false);
   const [bulkLeaveEmp, setBulkLeaveEmp] = useState('');
@@ -208,6 +209,12 @@ export default function Reports() {
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   };
 
+  const exportExcel = () => {
+    if (!excelMonth) return;
+    const [y, m] = excelMonth.split('-');
+    window.open(`http://localhost:3001/api/reports/excel-monthly?year=${y}&month=${m}`, '_blank');
+  };
+
   const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
   const weekLabel = `${toDMY(weekStart)} — ${toDMY(toISO(weekEnd))}`;
 
@@ -237,7 +244,21 @@ export default function Reports() {
           <h1 className="page-title text-gradient">Izveštaji</h1>
           <p className="page-description">Nedeljni raport sa automatskim uklapanjem u smene i prekovremenim radom.</p>
         </div>
-        <button className="btn-success" onClick={exportCSV}><Download size={20} /> Preuzmi CSV</button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="btn-success" onClick={exportCSV}><Download size={18} /> Nedeljni CSV</button>
+          <div style={{ width: '1px', height: '24px', background: 'var(--surface-border)', margin: '0 0.5rem' }}></div>
+          <input 
+            type="month" 
+            value={excelMonth} 
+            onChange={e => setExcelMonth(e.target.value)} 
+            className="input-glass" 
+            style={{ width: '140px', padding: '0.5rem' }} 
+            title="Izaberite mesec za Excel"
+          />
+          <button className="btn-primary" onClick={exportExcel} style={{ background: '#10b981', color: 'white' }}>
+            <FileSpreadsheet size={18} /> Matrični Excel
+          </button>
+        </div>
       </header>
 
       {/* Tabs */}
