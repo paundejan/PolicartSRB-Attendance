@@ -307,6 +307,14 @@ function toLocalDateStr(d) {
     return `${y}-${m}-${day}`;
 }
 
+// Helper: match names robustly (handles inversions and middle initials, e.g. "Ivan M. Ilic" vs "Ilic Ivan M")
+function extractNameWords(str) {
+    return (str || '').toLowerCase().replace(/[.,()]/g, '').split(/\s+/).filter(Boolean).sort().join(' ');
+}
+function nameMatch(rawName, firstName, lastName) {
+    return extractNameWords(rawName) === extractNameWords(`${firstName} ${lastName}`);
+}
+
 // API: Weekly Report — matches employees to shifts, handles overnight, calculates overtime
 app.get('/api/reports/weekly', async (req, res) => {
     try {
@@ -472,12 +480,7 @@ app.get('/api/reports/weekly', async (req, res) => {
             const overtimeMins = workedMins > 480 ? workedMins - 480 : 0;
 
             // Find employee info
-            const nameLower = (g.name || '').toLowerCase();
-            const empMatch = employees.find(e => {
-                const fLow = e.firstName.toLowerCase();
-                const lLow = e.lastName.toLowerCase();
-                return nameLower.includes(fLow) && nameLower.includes(lLow);
-            });
+            const empMatch = employees.find(e => nameMatch(g.name, e.firstName, e.lastName));
 
             // Check lateness
             let status = 'Nepoznato';
@@ -540,12 +543,7 @@ app.get('/api/reports/weekly', async (req, res) => {
             }
 
             // Find employee info
-            const nameLower = (lr.employeeName || '').toLowerCase();
-            const empMatch = employees.find(e => {
-                const fLow = e.firstName.toLowerCase();
-                const lLow = e.lastName.toLowerCase();
-                return nameLower.includes(fLow) && nameLower.includes(lLow);
-            });
+            const empMatch = employees.find(e => nameMatch(lr.employeeName, e.firstName, e.lastName));
 
             reportRows.push({
                 employeeName: lr.employeeName,

@@ -71,14 +71,24 @@ export default function Employees() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editId) {
-        await fetch(`http://localhost:3001/api/employees/${editId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
-      } else {
-        await fetch('http://localhost:3001/api/employees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const url = editId ? `http://localhost:3001/api/employees/${editId}` : 'http://localhost:3001/api/employees';
+      const method = editId ? 'PUT' : 'POST';
+      
+      const payload = { ...formData };
+      if (payload.employeeId === '') payload.employeeId = null;
+      if (payload.email === '') payload.email = null;
+
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const result = await res.json();
+      
+      if (!result.success) {
+        alert("Greška pri unosu: " + result.error);
+        return;
       }
+      
       setIsModalOpen(false);
       fetchEmployees();
-    } catch (err) { console.error("Save failed", err); }
+    } catch (err) { alert("Greška: " + err.message); console.error("Save failed", err); }
   };
 
   // Bulk selection

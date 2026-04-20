@@ -9,6 +9,13 @@ const prisma = new PrismaClient({
     }
 });
 
+function extractNameWords(str) {
+    return (str || '').toLowerCase().replace(/[.,()]/g, '').split(/\s+/).filter(Boolean).sort().join(' ');
+}
+function nameMatch(rawName, firstName, lastName) {
+    return extractNameWords(rawName) === extractNameWords(`${firstName} ${lastName}`);
+}
+
 async function runScraper(datesArray = [null]) {
     console.log(`Starting Kadrovska Scraper for ${datesArray.length} date(s)...`);
     let browser = null;
@@ -124,6 +131,26 @@ async function runScraper(datesArray = [null]) {
                                 }
                             });
                             totalNewRecordsCount++;
+                            
+                            // Auto-create employee if they don't exist yet
+                            const empParts = name.trim().split(' ');
+                            const lastName = empParts[0] || '';
+                            const firstName = empParts.slice(1).join(' ') || '';
+                            
+                            // Try to find if they exist (independent of inversion and middle name dots)
+                            const allEmps = await prisma.employee.findMany();
+                            const existingEmp = allEmps.find(e => nameMatch(name, e.firstName, e.lastName));
+
+                            if (!existingEmp) {
+                                await prisma.employee.create({
+                                    data: {
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        department: '-', // default
+                                        position: '-'    // default
+                                    }
+                                });
+                            }
                         }
                     };
 
