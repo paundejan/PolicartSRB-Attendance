@@ -4,6 +4,14 @@ const { PrismaClient } = require('./generated/client');
 const cron = require('node-cron');
 const path = require('path');
 const { runScraper } = require('./scraper');
+const { syncTimesheet } = require('./timesheetSync');
+
+function extractNameWords(str) {
+    return (str || '').toLowerCase().replace(/[.,()]/g, '').split(/\s+/).filter(Boolean).sort().join(' ');
+}
+function nameMatch(rawName, firstName, lastName) {
+    return extractNameWords(rawName) === extractNameWords(`${firstName} ${lastName}`);
+}
 
 const prisma = new PrismaClient({
     datasources: {
@@ -725,6 +733,215 @@ app.get('/api/leave', async (req, res) => {
         }
         const records = await prisma.leaveRecord.findMany({ where, orderBy: { date: 'asc' } });
         res.json({ success: true, data: records });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// API: Sync Timesheet
+app.post('/api/kadrovska/sync-timesheet', async (req, res) => {
+    try {
+        const { year, month } = req.body;
+        if (!year || !month) {
+            return res.status(400).json({ success: false, error: 'Year and month required (1-12).' });
+        }
+        
+        const result = await syncTimesheet(year, month);
+        if (result.success) {
+            res.json({ success: true, count: result.count });
+        } else {
+            res.status(500).json({ success: false, error: result.error });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ===== EXPORT / IMPORT =====
+
+// API: Export selected data types as JSON
+app.get('/api/export', async (req, res) => {
+    try {
+        const { employees, attendance, leaves, shifts } = req.query;
+        const exportData = {
+            _meta: {
+                app: 'PolicatSRB-Attendance',
+                version: '1.0',
+                exportedAt: new Date().toISOString(),
+                contains: []
+            }
+        };
+
+        if (employees === 'true') {
+            exportData.employees = await prisma.employee.findMany();
+            exportData._meta.contains.push('employees');
+        }
+        if (attendance === 'true') {
+            exportData.attendance = await prisma.attendanceRecord.findMany();
+            exportData._meta.contains.push('attendance');
+        }
+        if (leaves === 'true') {
+            exportData.leaves = await prisma.leaveRecord.findMany();
+            exportData._meta.contains.push('leaves');
+        }
+        if (shifts === 'true') {
+            exportData.shifts = await prisma.shift.findMany();
+            exportData._meta.contains.push('shifts');
+        }
+
+        if (exportData._meta.contains.length === 0) {
+            return res.status(400).json({ success: false, error: 'Izaberite bar jedan tip podataka za export.' });
+        }
+
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const filename = `policat_backup_${dateStr}.json`;
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(exportData, null, 2));
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// API: Import data from JSON backup file
+app.post('/api/import', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ success: false, error: 'Fajl nije poslat.' });
+
+        const fs = require('fs');
+        const raw = fs.readFileSync(req.file.path, 'utf-8');
+        let importData;
+        try {
+            importData = JSON.parse(raw);
+        } catch (e) {
+            return res.status(400).json({ success: false, error: 'Fajl nije validan JSON.' });
+        }
+
+        // Validate structure
+        if (!importData._meta || importData._meta.app !== 'PolicatSRB-Attendance') {
+            return res.status(400).json({ success: false, error: 'Fajl nije prepoznat kao PolicatSRB backup.' });
+        }
+
+        const results = { employees: 0, attendance: 0, leaves: 0, shifts: 0 };
+        const detected = importData._meta.contains || [];
+
+        // Import employees
+        if (importData.employees && Array.isArray(importData.employees)) {
+            for (const emp of importData.employees) {
+                try {
+                    await prisma.employee.upsert({
+                        where: { id: emp.id },
+                        update: {
+                            firstName: emp.firstName,
+                            lastName: emp.lastName,
+                            department: emp.department,
+                            position: emp.position,
+                            email: emp.email,
+                            isActive: emp.isActive
+                        },
+                        create: {
+                            employeeId: emp.employeeId,
+                            firstName: emp.firstName,
+                            lastName: emp.lastName,
+                            department: emp.department,
+                            position: emp.position,
+                            email: emp.email,
+                            isActive: emp.isActive !== undefined ? emp.isActive : true
+                        }
+                    });
+                    results.employees++;
+                } catch (e) { /* skip duplicates */ }
+            }
+        }
+
+        // Import attendance records
+        if (importData.attendance && Array.isArray(importData.attendance)) {
+            for (const rec of importData.attendance) {
+                try {
+                    await prisma.attendanceRecord.upsert({
+                        where: {
+                            employeeName_date_eventType_timestamp: {
+                                employeeName: rec.employeeName,
+                                date: rec.date,
+                                eventType: rec.eventType,
+                                timestamp: rec.timestamp
+                            }
+                        },
+                        update: {},
+                        create: {
+                            date: rec.date,
+                            eventType: rec.eventType,
+                            timestamp: rec.timestamp,
+                            employeeName: rec.employeeName
+                        }
+                    });
+                    results.attendance++;
+                } catch (e) { /* skip duplicates */ }
+            }
+        }
+
+        // Import leave records
+        if (importData.leaves && Array.isArray(importData.leaves)) {
+            for (const lr of importData.leaves) {
+                try {
+                    await prisma.leaveRecord.upsert({
+                        where: {
+                            employeeName_date: {
+                                employeeName: lr.employeeName,
+                                date: lr.date
+                            }
+                        },
+                        update: { leaveType: lr.leaveType, note: lr.note },
+                        create: {
+                            employeeName: lr.employeeName,
+                            date: lr.date,
+                            leaveType: lr.leaveType,
+                            note: lr.note || null
+                        }
+                    });
+                    results.leaves++;
+                } catch (e) { /* skip duplicates */ }
+            }
+        }
+
+        // Import shifts
+        if (importData.shifts && Array.isArray(importData.shifts)) {
+            for (const sh of importData.shifts) {
+                try {
+                    await prisma.shift.upsert({
+                        where: { name: sh.name },
+                        update: {
+                            startTime: sh.startTime,
+                            endTime: sh.endTime,
+                            isOvernight: sh.isOvernight || false,
+                            maxBreakMins: sh.maxBreakMins || 30,
+                            toleranceMins: sh.toleranceMins || 15,
+                            color: sh.color || '#3b82f6'
+                        },
+                        create: {
+                            name: sh.name,
+                            startTime: sh.startTime,
+                            endTime: sh.endTime,
+                            isOvernight: sh.isOvernight || false,
+                            maxBreakMins: sh.maxBreakMins || 30,
+                            toleranceMins: sh.toleranceMins || 15,
+                            color: sh.color || '#3b82f6'
+                        }
+                    });
+                    results.shifts++;
+                } catch (e) { /* skip duplicates */ }
+            }
+        }
+
+        // Cleanup uploaded file
+        fs.unlinkSync(req.file.path);
+
+        res.json({
+            success: true,
+            detected,
+            results,
+            message: `Import završen. Zaposleni: ${results.employees}, Prijave/Odjave: ${results.attendance}, Odsustva: ${results.leaves}, Smene: ${results.shifts}`
+        });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

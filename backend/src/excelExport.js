@@ -225,10 +225,11 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             }
             sheet.getColumn(40).width = 12; // sum
             sheet.getColumn(41).width = 15; // prekovremeno
-            sheet.getColumn(42).width = 12; // radnih dana
-            sheet.getColumn(43).width = 12; // dani odmora
-            sheet.getColumn(44).width = 12; // bolovanje
-            sheet.getColumn(45).width = 15; // slobodni dan
+            sheet.getColumn(42).width = 15; // ukupno radnih sati
+            sheet.getColumn(43).width = 12; // radnih dana
+            sheet.getColumn(44).width = 12; // dani odmora
+            sheet.getColumn(45).width = 12; // bolovanje
+            sheet.getColumn(46).width = 15; // slobodni dan
 
             // Row 1: Headers and Merged Month
             const r1 = sheet.getRow(1);
@@ -247,10 +248,11 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
             r1.getCell(40).value = 'Ukupno sati';
             r1.getCell(41).value = 'Prekovremeno';
-            r1.getCell(42).value = 'radnih dana';
-            r1.getCell(43).value = 'dani odmora';
-            r1.getCell(44).value = 'Bolovanje (dani)';
-            r1.getCell(45).value = 'Slobodni dani';
+            r1.getCell(42).value = 'ukupno radnih sati';
+            r1.getCell(43).value = 'radnih dana';
+            r1.getCell(44).value = 'dani odmora';
+            r1.getCell(45).value = 'Bolovanje (dani)';
+            r1.getCell(46).value = 'Slobodni dani';
 
             // Row 2: Days
             const r2 = sheet.getRow(2);
@@ -261,8 +263,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             // Styling Headers
             [1, 2].forEach(rn => {
                 sheet.getRow(rn).eachCell({ includeEmpty: true }, (c, colNumber) => {
-                    // Only style columns that are part of the table
-                    if (colNumber > 45) return;
+                    if (colNumber > 46) return;
                     c.font = { bold: true };
                     c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                     c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
@@ -279,7 +280,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                 const rwBot = sheet.getRow(rowIdx + 1);
                 
                 // Merge structural and summary cells
-                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45].forEach(c => {
+                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45,46].forEach(c => {
                     sheet.mergeCells(rowIdx, c, rowIdx + 1, c);
                 });
 
@@ -296,6 +297,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
                 let rowSum = 0;
                 let overtimeSum = 0;
+                let radniSati = 0;
                 let radnihDana = 0;
                 let odmorDays = 0;
                 let bolovanjeDays = 0;
@@ -324,16 +326,21 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                             cellTop.value = displayVal;
                         }
                         
+                        const isOdmor = ['go', 'ks', 'odmor', 'GO', 'PO', 'DP N', 'VP'].includes(displayVal);
+                        const isBolovanje = ['bo', 'bolovanje', 'B30', 'B31', 'OR', 'POD'].includes(displayVal);
+                        const isSlobodan = ['sr', 'slobodan_dan', 'SD', 'SL'].includes(displayVal);
+
                         if (typeof displayVal === 'number') {
                             rowSum += displayVal;
+                            radniSati += displayVal;
                             if (displayVal > 0) radnihDana++;
-                        } else if (displayVal === 'go' || displayVal === 'ks') {
+                        } else if (isOdmor) {
                             rowSum += 8;
-                            if (displayVal === 'go') odmorDays++;
-                        } else if (displayVal === 'bo') {
+                            odmorDays++;
+                        } else if (isBolovanje) {
                             rowSum += 8;
                             bolovanjeDays++;
-                        } else if (displayVal === 'sr') {
+                        } else if (isSlobodan) {
                             slobodniDays++;
                         }
                     }
@@ -341,13 +348,17 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                     // Background coloring prioritization
                     const dayOfWeek = new Date(y, m-1, i).getDay();
                     const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
+                    
+                    const isOdmorCdt = ['go', 'ks', 'odmor', 'GO', 'PO', 'DP N', 'VP'].includes(displayVal);
+                    const isBolCdt = ['bo', 'bolovanje', 'B30', 'B31', 'OR', 'POD'].includes(displayVal);
+                    const isSloCdt = ['sr', 'slobodan_dan', 'SD', 'SL'].includes(displayVal);
 
                     [cellTop, cellBot].forEach(cell => {
-                        if (displayVal === 'go' || displayVal === 'ks') {
+                        if (isOdmorCdt) {
                             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF92D050' } }; // Green
-                        } else if (displayVal === 'bo') {
+                        } else if (isBolCdt) {
                             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC000' } }; // Orange
-                        } else if (displayVal === 'sr') {
+                        } else if (isSloCdt) {
                             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } }; // Blue
                         } else if (isNight) {
                             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; // Yellow
@@ -362,19 +373,20 @@ module.exports = function attachExcelEndpoint(app, prisma) {
 
                 rwTop.getCell(40).value = rowSum;
                 rwTop.getCell(41).value = overtimeSum;
-                rwTop.getCell(42).value = radnihDana;
-                rwTop.getCell(43).value = odmorDays;
-                rwTop.getCell(44).value = bolovanjeDays;
-                rwTop.getCell(45).value = slobodniDays;
+                rwTop.getCell(42).value = radniSati + overtimeSum;
+                rwTop.getCell(43).value = radnihDana;
+                rwTop.getCell(44).value = odmorDays;
+                rwTop.getCell(45).value = bolovanjeDays;
+                rwTop.getCell(46).value = slobodniDays;
                 
-                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45].forEach(c => {
+                [1,2,3,4,5,6,7,8, 40,41,42,43,44,45,46].forEach(c => {
                     [rwTop, rwBot].forEach(r => {
                         r.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                         r.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };
                     });
                 });
                 
-                [40,41,42,43,44,45].forEach(c => {
+                [40,41,42,43,44,45,46].forEach(c => {
                    rwTop.getCell(c).font = { bold: true };
                 });
 

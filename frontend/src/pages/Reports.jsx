@@ -105,6 +105,21 @@ export default function Reports() {
     bolovanje:    { label: 'Bolovanje',    icon: HeartPulse, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
     slobodan_dan: { label: 'Slobodan dan', icon: CalendarOff, color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
     rad_8h:       { label: 'Rad (8h)',     icon: Briefcase,  color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+    // Kadrovska Timesheet mapping
+    'VP':         { label: 'Verski Praznik',       icon: Palmtree,      color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+    'B30':        { label: 'Bolovanje do 30',      icon: HeartPulse,    color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    'B31':        { label: 'Bolovanje preko 30',   icon: HeartPulse,    color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    'PO':         { label: 'Plaćeno Odsustvo',     icon: Palmtree,      color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+    'NO':         { label: 'Neplaćeno Odsustvo',   icon: CalendarOff,   color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
+    'GO':         { label: 'Godišnji Odmor',       icon: Palmtree,      color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+    'SD':         { label: 'Slobodan Dan',         icon: CalendarOff,   color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
+    'OR':         { label: 'Nega deteta',          icon: HeartPulse,    color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    'POD':        { label: 'Porodiljsko',          icon: HeartPulse,    color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    'NI':         { label: 'Neopravdani',          icon: AlertTriangle, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+    'UR':         { label: 'Udaljenje sa Rada',    icon: AlertTriangle, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+    'SL':         { label: 'Službeni Put',         icon: Briefcase,     color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+    'MR':         { label: 'Mirovanje',            icon: CalendarOff,   color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
+    'DP N':       { label: 'Državni Praznik',      icon: Palmtree,      color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
   };
 
   const assignLeave = async (employeeName, date, leaveType) => {
@@ -143,9 +158,22 @@ export default function Reports() {
     } catch (err) { console.error(err); }
   };
 
+  // Process data for charts
+  const getAbsenceStats = () => {
+    let leaves = 0, late = 0;
+    weeklyData.forEach(d => {
+      if (d.leaveType) leaves++;
+      if (d.lateMins > 0) late++;
+    });
+    return [
+      { name: 'Redovni', value: weeklyData.length - leaves },
+      { name: 'Odsutni', value: leaves },
+      { name: 'Kašnjenja', value: late }
+    ];
+  };
+
   // Unique departments from employees DB
   const allDepts = [...new Set(employees.map(e => e.department).filter(Boolean))].sort();
-
   // Group by employee
   const groupedByEmployee = {};
   
@@ -478,6 +506,7 @@ export default function Reports() {
           )}
         </div>
       )}
+
     </div>
 
       <ActionModal />
