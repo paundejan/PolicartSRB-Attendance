@@ -102,13 +102,26 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                     if (entries.length === 0) continue;
 
                     const firstEntryMins = toMinutes(entries[0]);
+                    
+                    const nextDay = new Date(g.date + 'T12:00:00');
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    const nextDayStr = toDateString(nextDay.getFullYear(), nextDay.getMonth() + 1, nextDay.getDate());
+                    const nextDayKey = `${g.name}||${nextDayStr}`;
+
                     if (firstEntryMins >= 1080) { // >= 18:00
                         eveningStartDates.add(key);
-                        const nextDay = new Date(g.date + 'T12:00:00');
-                        nextDay.setDate(nextDay.getDate() + 1);
-                        const nextDayStr = toDateString(nextDay.getFullYear(), nextDay.getMonth() + 1, nextDay.getDate());
-                        consumedMornings.add(`${g.name}||${nextDayStr}`);
+                        consumedMornings.add(nextDayKey);
                         changed = true;
+                    } else if (firstEntryMins >= 720) { // >= 12:00 — afternoon shift (Druga Smena)
+                        if (groupedAtt[nextDayKey]) {
+                            const morningExits = groupedAtt[nextDayKey].exits.filter(t => toMinutes(t) < 480);
+                            const morningEntries = groupedAtt[nextDayKey].entries.filter(t => toMinutes(t) < 480);
+                            if (morningExits.length > 0 && morningEntries.length === 0) {
+                                eveningStartDates.add(key);
+                                consumedMornings.add(nextDayKey);
+                                changed = true;
+                            }
+                        }
                     }
                 }
             }
@@ -176,7 +189,7 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                     }
                 }
 
-                const isNightShift = entryMins >= 1200 || entryMins < 240;
+                const isNightShift = isOvernightSession;
 
                 if (!emp.days[g.date] || isWeekend) {
                     emp.days[g.date] = { val: decidedVal, overtime: decidedOvertime, nightShift: isNightShift };
@@ -189,6 +202,11 @@ module.exports = function attachExcelEndpoint(app, prisma) {
                 const emp = empData.find(e => nameMatch(ov.employeeName, e.firstName, e.lastName));
                 if (!emp) continue;
                 
+                // If the attendance loop already processed this day, it correctly handled the overtime.
+                if (emp.days[ov.date] && typeof emp.days[ov.date] === 'object' && emp.days[ov.date].overtime !== undefined) {
+                    continue;
+                }
+
                 if (!emp.days[ov.date]) {
                     emp.days[ov.date] = {};
                 }

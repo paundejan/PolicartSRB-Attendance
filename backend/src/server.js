@@ -517,6 +517,12 @@ app.get('/api/reports/weekly', async (req, res) => {
             const empMatch = employees.find(e => nameMatch(g.name, e.firstName, e.lastName));
             if (!empMatch) continue; // Skip attendance if employee is deleted or unmapped
 
+            const uniformName = `${empMatch.firstName} ${empMatch.lastName}`;
+            const isHoliday = leaveRecords.some(lr => lr.date === g.date && nameMatch(lr.employeeName, empMatch.firstName, empMatch.lastName) && ['DP N', 'VP', 'DP R'].includes(lr.leaveType));
+            if (isHoliday && !isWeekend) {
+                overtimeMins = workedMins;
+            }
+
             // Check lateness
             let status = 'Nepoznato';
             let lateMins = 0;
@@ -535,7 +541,6 @@ app.get('/api/reports/weekly', async (req, res) => {
             }
 
             // Check overtime approval and overrides
-            const uniformName = `${empMatch.firstName} ${empMatch.lastName}`;
             const approvalKey = `${uniformName}||${g.date}`;
             const overtimeData = approvalMap[approvalKey];
             const overtimeApproved = overtimeData ? overtimeData.approved : false;
@@ -741,6 +746,37 @@ app.delete('/api/leave', async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Delete specific day's attendance records (useful to clear false holiday punches)
+app.delete('/api/attendance/day', async (req, res) => {
+    try {
+        const { employeeName, date } = req.body;
+        if (!employeeName || !date) return res.status(400).json({ success: false, error: 'Nedostaju podaci' });
+        
+        const employees = await prisma.employee.findMany();
+        const empMatch = employees.find(e => nameMatch(employeeName, e.firstName, e.lastName));
+        if (!empMatch) return res.status(404).json({ success: false, error: 'Radnik nije pronađen' });
+
+        // Fetch all records for the day and filter using the robust nameMatch
+        const dayRecords = await prisma.attendanceRecord.findMany({
+            where: { date: date }
+        });
+
+        const recordsToDelete = dayRecords.filter(r => nameMatch(r.employeeName, empMatch.firstName, empMatch.lastName));
+        const idsToDelete = recordsToDelete.map(r => r.id);
+
+        if (idsToDelete.length > 0) {
+            await prisma.attendanceRecord.deleteMany({
+                where: { id: { in: idsToDelete } }
+            });
+        }
+
+        res.json({ success: true, deletedCount: idsToDelete.length });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Greška pri brisanju prijava/odjava' });
     }
 });
 

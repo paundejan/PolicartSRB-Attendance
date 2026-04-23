@@ -102,9 +102,6 @@ export default function Reports() {
   };
 
   const LEAVE_CONFIG = {
-    odmor:        { label: 'Odmor',        icon: Palmtree,   color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
-    bolovanje:    { label: 'Bolovanje',    icon: HeartPulse, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
-    slobodan_dan: { label: 'Slobodan dan', icon: CalendarOff, color: '#94a3b8', bg: 'rgba(148,163,184,0.12)' },
     rad_8h:       { label: 'Rad (8h)',     icon: Briefcase,  color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
     // Kadrovska Timesheet mapping
     'VP':         { label: 'Verski Praznik',       icon: Palmtree,      color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
@@ -130,7 +127,7 @@ export default function Reports() {
         body: JSON.stringify({ employeeName, startDate: date, leaveType })
       });
       setActionModal(null);
-      fetchWeeklyReport();
+      fetchWeeklyReport(true);
     } catch (err) { console.error(err); }
   };
 
@@ -141,7 +138,7 @@ export default function Reports() {
         method: 'DELETE', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employeeName, date })
       });
-      fetchWeeklyReport();
+      fetchWeeklyReport(true);
     } catch (err) { console.error(err); }
   };
 
@@ -155,7 +152,7 @@ export default function Reports() {
       setShowBulkLeave(false);
       setLeaveForm({ leaveType: 'odmor', startDate: '', endDate: '', note: '' });
       setBulkLeaveEmp('');
-      fetchWeeklyReport();
+      fetchWeeklyReport(true);
     } catch (err) { console.error(err); }
   };
 
@@ -510,7 +507,7 @@ export default function Reports() {
                             }
                             // Normal attendance cell
                             return (
-                              <td key={date} style={{ padding: '0.4rem 0.3rem', verticalAlign: 'top', textAlign: 'center' }}>
+                              <td key={date} onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'leave', defaultMins: null, hasAttendance: true })} style={{ padding: '0.4rem 0.3rem', verticalAlign: 'top', textAlign: 'center', cursor: 'pointer' }} title="Kliknite za izmenu ili brisanje prijave">
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                     <span style={{ display: 'inline-block', padding: '1px 7px', borderRadius: '999px', fontSize: '0.65rem', fontWeight: 700, background: `${d.shiftColor}22`, color: d.shiftColor, border: `1px solid ${d.shiftColor}44` }}>{d.shiftName}</span>
@@ -521,16 +518,15 @@ export default function Reports() {
                                     <span style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '2px' }}><LogOut size={10} /> {d.lastExit ? d.lastExit.substring(0, 5) : '-'}</span>
                                   </div>
                                   <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{d.workedFormatted}</span>
-                                  {/* Normal Overtime display block */}
                                   {d.overtimeMins > 0 && d.status !== 'Ručni Unos' && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '1px 6px', borderRadius: '6px', background: d.overtimeApproved ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${d.overtimeApproved ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}` }}>
-                                      <input type="checkbox" checked={d.overtimeApproved} onChange={() => toggleOvertime(d.employeeName, d.date, d.overtimeApproved)} style={{ width: '13px', height: '13px', cursor: 'pointer', accentColor: 'var(--success)' }} title={d.overtimeApproved ? 'Prihvaćeno' : 'Prihvati prekovremeno'} />
-                                      <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins })} style={{ fontSize: '0.65rem', fontWeight: 700, color: d.overtimeApproved ? 'var(--success)' : 'var(--warning)', cursor: 'pointer' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
+                                      <input type="checkbox" checked={d.overtimeApproved} onChange={(e) => { e.stopPropagation(); toggleOvertime(d.employeeName, d.date, d.overtimeApproved); }} style={{ width: '13px', height: '13px', cursor: 'pointer', accentColor: 'var(--success)' }} title={d.overtimeApproved ? 'Prihvaćeno' : 'Prihvati prekovremeno'} />
+                                      <span onClick={(e) => { e.stopPropagation(); setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins }); }} style={{ fontSize: '0.65rem', fontWeight: 700, color: d.overtimeApproved ? 'var(--success)' : 'var(--warning)', cursor: 'pointer' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
                                     </div>
                                   )}
                                   {/* Add overtime button when no overtime exists */}
                                   {(!d.overtimeMins || d.overtimeMins === 0) && d.status !== 'Ručni Unos' && (
-                                    <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: '' })}
+                                    <span onClick={(e) => { e.stopPropagation(); setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: '' }); }}
                                       style={{ fontSize: '0.6rem', color: 'var(--text-muted)', cursor: 'pointer', opacity: 0.5, padding: '1px 6px', borderRadius: '4px', border: '1px dashed rgba(255,255,255,0.15)', transition: 'opacity 0.2s' }}
                                       onMouseEnter={e => e.target.style.opacity = 1}
                                       onMouseLeave={e => e.target.style.opacity = 0.5}
@@ -540,7 +536,7 @@ export default function Reports() {
                                   {d.status === 'Ručni Unos' && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(16,185,129,0.15)', border: `1px solid rgba(16,185,129,0.4)` }}>
                                       <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--success)' }}>Prekovr. (ručno)</span>
-                                      <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins })} style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--success)', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', padding:'1px 5px', borderRadius:'4px' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
+                                      <span onClick={(e) => { e.stopPropagation(); setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins }); }} style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--success)', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', padding:'1px 5px', borderRadius:'4px' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
                                     </div>
                                   )}
                                   {d.status !== 'Ručni Unos' && <StatusBadge status={d.status} />}
@@ -636,6 +632,21 @@ export default function Reports() {
                   </button>
                 );
               })}
+              {actionModal.hasAttendance && (
+                <button onClick={async () => {
+                  if(!window.confirm(`Ovo će obrisati sve prijave i odjave za ${actionModal.employeeName} na dan ${actionModal.date}. Da li ste sigurni?`)) return;
+                  try {
+                    await fetch('http://localhost:3001/api/attendance/day', {
+                      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ employeeName: actionModal.employeeName, date: actionModal.date })
+                    });
+                    setActionModal(null);
+                    fetchWeeklyReport(true);
+                  } catch(e) { console.error(e); }
+                }} style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.6rem 1rem', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem', fontWeight: 600, color: '#ef4444' }}>
+                  <X size={16} /> Obriši prijave/odjave (Očisti dan)
+                </button>
+              )}
             </div>
           )}
         </div>

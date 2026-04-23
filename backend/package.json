@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "1.2.2",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -11,7 +11,7 @@
     "appId": "com.policatsrb.attendance",
     "productName": "PolicatSRB",
     "win": {
-      "target": "nsis"
+      "target": "portable"
     },
     "asar": false,
     "files": [
