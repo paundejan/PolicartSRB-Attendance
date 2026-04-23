@@ -374,47 +374,68 @@ app.get('/api/reports/weekly', async (req, res) => {
             if (rec.eventType === 'Odjava') grouped[key].exits.push(rec.timestamp);
         }
 
+        // Pre-processing: filter out orphan exits (exits that occur before the first entry of the day)
+        // BUT preserve exits before 08:00 — those may be overnight continuations from previous day
+        for (const key of Object.keys(grouped)) {
+            const g = grouped[key];
+            if (g.entries.length > 0 && g.exits.length > 0) {
+                const firstEntryMins = toMinutes(g.entries[0]);
+                g.exits = g.exits.filter(t => {
+                    const exitMins = toMinutes(t);
+                    // Keep exits that are: after first entry OR before 08:00 (potential overnight)
+                    return exitMins >= firstEntryMins || exitMins < 480;
+                });
+            }
+        }
+
         // ============================================================
         // ITERATIVE TIME-BASED overnight detection
-        // Key insight: a date is "overnight start" ONLY if the FIRST
-        // entry (after filtering consumed mornings) is >= 18:00.
-        // If first entry is afternoon (e.g. 13:32), evening entries
-        // are just break re-entries of the SAME shift (e.g. Druga Smena).
+        // Detects two cases:
+        // 1. Classic night shift: first entry >= 18:00
+        // 2. Afternoon overtime: first entry >= 12:00 AND next day has
+        //    an early exit (before 08:00) with no corresponding entry
         // ============================================================
 
-        const eveningStartDates = new Set(); // dates confirmed as overnight shift starts
-        const consumedMornings = new Set();  // dates whose morning records belong to prev night
+        const eveningStartDates = new Set();
+        const consumedMornings = new Set();
 
-        // Iterative: discover overnight starts, mark next-day mornings, repeat
         let changed = true;
         while (changed) {
             changed = false;
             for (const key of Object.keys(grouped)) {
-                if (eveningStartDates.has(key)) continue; // already confirmed
+                if (eveningStartDates.has(key)) continue;
                 const g = grouped[key];
                 if (g.entries.length === 0) continue;
 
                 let entries = [...g.entries];
 
-                // Filter consumed morning entries (from a previous overnight)
                 if (consumedMornings.has(key)) {
                     entries = entries.filter(t => toMinutes(t) >= 720);
                 }
 
                 if (entries.length === 0) continue;
 
-                // Check if the FIRST remaining entry is in the evening
                 const firstEntryMins = toMinutes(entries[0]);
-                if (firstEntryMins >= 1080) { // >= 18:00
+
+                const nextDay = new Date(g.date + 'T12:00:00');
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = toLocalDateStr(nextDay);
+                const nextDayKey = `${g.name}||${nextDayStr}`;
+
+                if (firstEntryMins >= 1080) { // >= 18:00 — classic night shift
                     eveningStartDates.add(key);
-
-                    // Mark next day's morning as consumed
-                    const nextDay = new Date(g.date + 'T12:00:00');
-                    nextDay.setDate(nextDay.getDate() + 1);
-                    const nextDayStr = toLocalDateStr(nextDay);
-                    consumedMornings.add(`${g.name}||${nextDayStr}`);
-
+                    consumedMornings.add(nextDayKey);
                     changed = true;
+                } else if (firstEntryMins >= 720) { // >= 12:00 — afternoon shift (Druga Smena)
+                    if (grouped[nextDayKey]) {
+                        const morningExits = grouped[nextDayKey].exits.filter(t => toMinutes(t) < 480);
+                        const morningEntries = grouped[nextDayKey].entries.filter(t => toMinutes(t) < 480);
+                        if (morningExits.length > 0 && morningEntries.length === 0) {
+                            eveningStartDates.add(key);
+                            consumedMornings.add(nextDayKey);
+                            changed = true;
+                        }
+                    }
                 }
             }
         }

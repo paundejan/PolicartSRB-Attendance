@@ -28,6 +28,7 @@ export default function Reports() {
   const [weeklyLoading, setWeeklyLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('weekly');
   const [filterDept, setFilterDept] = useState('__all__');
+  const [selectedEmps, setSelectedEmps] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [actionModal, setActionModal] = useState(null); // { employeeName, date, tab: 'leave'|'overtime', defaultMins: null }
   const [excelMonth, setExcelMonth] = useState(() => toISO(new Date()).substring(0, 7));
@@ -53,14 +54,14 @@ export default function Reports() {
     }).catch(console.error).finally(() => setChartLoading(false));
   };
 
-  const fetchWeeklyReport = useCallback(async () => {
-    setWeeklyLoading(true);
+  const fetchWeeklyReport = useCallback(async (silent = false) => {
+    if (!silent) setWeeklyLoading(true);
     try {
       const res = await fetch(`http://localhost:3001/api/reports/weekly?weekStart=${weekStart}`);
       const result = await res.json();
       if (result.success) { setWeeklyData(result.data); setWeeklyDates(result.dates || []); }
     } catch (err) { console.error(err); }
-    setWeeklyLoading(false);
+    if (!silent) setWeeklyLoading(false);
   }, [weekStart]);
 
   const processChartData = (records) => {
@@ -85,7 +86,7 @@ export default function Reports() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employeeName, date, approved: !currentApproved })
       });
-      fetchWeeklyReport();
+      fetchWeeklyReport(true); // silent fetch to preserve scroll
     } catch (err) { console.error(err); }
   };
 
@@ -96,7 +97,7 @@ export default function Reports() {
         body: JSON.stringify({ employeeName, date, approved: true, approvedMins })
       });
       setActionModal(null);
-      fetchWeeklyReport();
+      fetchWeeklyReport(true); // silent fetch
     } catch (err) { console.error(err); }
   };
 
@@ -220,7 +221,18 @@ export default function Reports() {
   }).sort((a, b) => (a.department || 'zzz').localeCompare(b.department || 'zzz') || a.name.localeCompare(b.name));
 
   // Filter by department
-  const filteredEmployees = filterDept === '__all__' ? employeeList : employeeList.filter(e => (e.department || '-') === filterDept);
+  let filteredEmployees = employeeList;
+  if (filterDept !== '__all__') {
+    filteredEmployees = filteredEmployees.filter(e => (e.department || '-') === filterDept);
+  }
+
+  // List of available employees for the employee dropdown
+  const availableEmployeesForFilter = [...filteredEmployees];
+
+  // Filter by specific employees (multiple)
+  if (selectedEmps.length > 0) {
+    filteredEmployees = filteredEmployees.filter(e => selectedEmps.includes(e.name));
+  }
 
   // Group filtered employees by department for section headers
   const deptGroups = {};
@@ -251,6 +263,43 @@ export default function Reports() {
     window.open(`http://localhost:3001/api/reports/excel-monthly?year=${y}&month=${m}`, '_blank');
   };
 
+  const exportWeeklyOvertimeExcel = async () => {
+    // We only want employees who have approved overtime > 0
+    const employeesWithOvertime = filteredEmployees.filter(emp => emp.totalOvertimeMins > 0);
+    
+    if (employeesWithOvertime.length === 0) {
+      alert("Nema odobrenog prekovremenog rada u izabranoj nedelji.");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/api/reports/excel-overtime-weekly', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          weekStart,
+          weeklyDates,
+          employees: employeesWithOvertime
+        })
+      });
+      
+      if (!response.ok) throw new Error('Greška pri generisanju Excela');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('hidden', ''); 
+      a.setAttribute('href', url);
+      a.setAttribute('download', `Nedeljno_Prekovremeno_${weekStart}.xlsx`);
+      document.body.appendChild(a); 
+      a.click(); 
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error(err);
+      alert("Došlo je do greške prilikom preuzimanja Excel fajla.");
+    }
+  };
+
   const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
   const weekLabel = `${toDMY(weekStart)} — ${toDMY(toISO(weekEnd))}`;
 
@@ -274,14 +323,16 @@ export default function Reports() {
 
   return (
     <>
-    <div>
-      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 2rem)' }}>
+      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', flexShrink: 0 }}>
         <div>
           <h1 className="page-title text-gradient">Izveštaji</h1>
-          <p className="page-description">Nedeljni raport sa automatskim uklapanjem u smene i prekovremenim radom.</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <button className="btn-success" onClick={exportCSV}><Download size={18} /> Nedeljni CSV</button>
+          <button className="btn-primary" onClick={exportWeeklyOvertimeExcel} style={{ background: '#f59e0b', color: 'white' }}>
+            <FileSpreadsheet size={18} /> Prekovremeno (Excel)
+          </button>
           <div style={{ width: '1px', height: '24px', background: 'var(--surface-border)', margin: '0 0.5rem' }}></div>
           <input 
             type="month" 
@@ -297,20 +348,9 @@ export default function Reports() {
         </div>
       </header>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {[['weekly', 'Nedeljni Raport'], ['chart', 'Grafikon']].map(([key, label]) => (
-          <button key={key} onClick={() => setActiveTab(key)} style={{
-            padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--surface-border)', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit', fontSize: '0.9rem', transition: 'var(--transition)',
-            background: activeTab === key ? 'var(--primary-color)' : 'transparent', color: activeTab === key ? 'white' : 'var(--text-muted)'
-          }}>{label}</button>
-        ))}
-      </div>
-
-      {activeTab === 'weekly' && (
-        <div>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
           {/* Week Navigator + Dept Filter */}
-          <div className="glass-panel" style={{ padding: '0.75rem 1.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="glass-panel" style={{ padding: '0.75rem 1.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', flexShrink: 0 }}>
             <button onClick={() => shiftWeek(-1)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--surface-border)', color: 'white', borderRadius: '8px', padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'inherit', fontSize: '0.85rem' }}>
               <ChevronLeft size={16} /> Prethodna
             </button>
@@ -320,19 +360,55 @@ export default function Reports() {
               <Plus size={14} /> Odsustvo
             </button>
 
-            {/* Department filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Building2 size={16} color="var(--text-muted)" />
-              <select
-                value={filterDept}
-                onChange={e => setFilterDept(e.target.value)}
-                className="input-glass"
-                style={{ width: 'auto', minWidth: '180px', padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}
-              >
-                <option value="__all__">Svi Odseci</option>
-                {allDepts.map(d => <option key={d} value={d}>{d}</option>)}
-                <option value="-">Bez odseka</option>
-              </select>
+            {/* Department and Employee filters */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Building2 size={16} color="var(--text-muted)" />
+                  <select
+                    value={filterDept}
+                    onChange={e => { setFilterDept(e.target.value); setSelectedEmps([]); }}
+                    className="input-glass"
+                    style={{ width: 'auto', minWidth: '160px', padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}
+                  >
+                    <option value="__all__">Svi Odseci</option>
+                    {allDepts.map(d => <option key={d} value={d}>{d}</option>)}
+                    <option value="-">Bez odseka</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <select
+                    value=""
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (val && !selectedEmps.includes(val)) {
+                        setSelectedEmps([...selectedEmps, val]);
+                      }
+                    }}
+                    className="input-glass"
+                    style={{ width: 'auto', minWidth: '180px', padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}
+                  >
+                    <option value="">+ Dodaj Radnika</option>
+                    {availableEmployeesForFilter.filter(e => !selectedEmps.includes(e.name)).map(e => <option key={e.name} value={e.name}>{e.name}</option>)}
+                  </select>
+                </div>
+              </div>
+              
+              {/* Selected Employees Chips */}
+              {selectedEmps.length > 0 && (
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center', marginTop: '2px' }}>
+                  {selectedEmps.map(empName => (
+                    <span key={empName} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--primary-color)', color: 'white', padding: '2px 8px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 600 }}>
+                      {empName}
+                      <button onClick={() => setSelectedEmps(selectedEmps.filter(n => n !== empName))} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }} title="Ukloni">
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                  <button onClick={() => setSelectedEmps([])} style={{ background: 'none', border: 'none', color: 'var(--danger)', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, marginLeft: '4px' }}>Očisti sve</button>
+                </div>
+              )}
             </div>
 
             <div style={{ textAlign: 'center' }}>
@@ -345,16 +421,16 @@ export default function Reports() {
           </div>
 
           {/* Table */}
-          <div className="glass-panel" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: 'calc(100vw - 280px)' }}>
+          <div className="glass-panel" style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, minHeight: 0, WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: '100%' }}>
             {weeklyLoading ? (
               <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Učitavanje...</div>
             ) : filteredEmployees.length === 0 ? (
               <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Nema aktivnosti za ovu nedelju{filterDept !== '__all__' ? ` u odseku "${filterDept}"` : ''}.</div>
             ) : (
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1400px' }}>
-                <thead>
-                  <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
-                    <th style={{ ...thStyle, ...stickyCol, textAlign: 'left', minWidth: '160px', padding: '0.5rem 1rem' }}>Ime Radnika</th>
+                <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0f172a', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)' }}>
+                  <tr>
+                    <th style={{ ...thStyle, ...stickyCol, textAlign: 'left', minWidth: '160px', padding: '0.5rem 1rem', background: '#0f172a', zIndex: 11 }}>Ime Radnika</th>
                     {/* Summary columns */}
                     <th style={{ ...thStyle, minWidth: '70px', borderLeft: '2px solid rgba(99,102,241,0.3)' }}>
                       <div>Ukupno</div><div style={{ fontSize: '0.6rem', opacity: 0.7 }}>Rad</div>
@@ -452,6 +528,14 @@ export default function Reports() {
                                       <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: d.overtimeMins })} style={{ fontSize: '0.65rem', fontWeight: 700, color: d.overtimeApproved ? 'var(--success)' : 'var(--warning)', cursor: 'pointer' }} title="Klikni za izmenu">+{d.overtimeFormatted}</span>
                                     </div>
                                   )}
+                                  {/* Add overtime button when no overtime exists */}
+                                  {(!d.overtimeMins || d.overtimeMins === 0) && d.status !== 'Ručni Unos' && (
+                                    <span onClick={() => setActionModal({ employeeName: d.employeeName, date: d.date, tab: 'overtime', defaultMins: '' })}
+                                      style={{ fontSize: '0.6rem', color: 'var(--text-muted)', cursor: 'pointer', opacity: 0.5, padding: '1px 6px', borderRadius: '4px', border: '1px dashed rgba(255,255,255,0.15)', transition: 'opacity 0.2s' }}
+                                      onMouseEnter={e => e.target.style.opacity = 1}
+                                      onMouseLeave={e => e.target.style.opacity = 0.5}
+                                      title="Dodaj prekovremeno ručno">+ Prekovr.</span>
+                                  )}
                                   {/* Special visual block for manual overtime record (where no attendance exists) */}
                                   {d.status === 'Ručni Unos' && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '6px', background: 'rgba(16,185,129,0.15)', border: `1px solid rgba(16,185,129,0.4)` }}>
@@ -474,7 +558,7 @@ export default function Reports() {
           </div>
 
           {/* Legend */}
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem', padding: '0 0.5rem', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem', padding: '0 0.5rem', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-muted)', flexShrink: 0 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><LogIn size={13} color="var(--success)" /> Prva prijava</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><LogOut size={13} color="var(--danger)" /> Poslednja odjava</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Moon size={13} color="var(--primary-color)" /> Noćna smena</span>
@@ -483,29 +567,6 @@ export default function Reports() {
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><CalendarOff size={13} color="#94a3b8" /> Slobodan dan (8h)</span>
           </div>
         </div>
-      )}
-
-      {activeTab === 'chart' && (
-        <div className="glass-panel" style={{ padding: '2rem', height: '500px' }}>
-          {chartLoading ? (
-            <div style={{ color: 'var(--text-muted)' }}>Učitavanje grafikona...</div>
-          ) : chartData.length === 0 ? (
-            <div style={{ color: 'var(--text-muted)' }}>Nema podataka. Pokrenite sinhronizaciju!</div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="date" stroke="var(--text-muted)" />
-                <YAxis stroke="var(--text-muted)" allowDecimals={false} />
-                <Tooltip contentStyle={{ background: 'var(--bg-color)', border: '1px solid var(--surface-border)', borderRadius: '8px' }} itemStyle={{ color: 'var(--text-main)' }} />
-                <Legend />
-                <Bar dataKey="Prijave" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Odjave" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      )}
 
     </div>
 

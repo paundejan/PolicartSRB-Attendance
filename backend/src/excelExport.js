@@ -405,4 +405,103 @@ module.exports = function attachExcelEndpoint(app, prisma) {
             res.status(500).json({ success: false, error: error.message });
         }
     });
+
+    app.post('/api/reports/excel-overtime-weekly', async (req, res) => {
+        try {
+            const { weekStart, weeklyDates, employees } = req.body;
+            if (!weekStart || !weeklyDates || !employees) {
+                return res.status(400).json({ success: false, error: 'Nedostaju podaci' });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'PolicatSRB System';
+            
+            const sheet = workbook.addWorksheet(`Prekovremeno_${weekStart}`, {
+                views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }]
+            });
+
+            // Set column widths
+            sheet.getColumn(1).width = 5;
+            sheet.getColumn(2).width = 25;
+            for (let i = 0; i < weeklyDates.length; i++) {
+                sheet.getColumn(3 + i).width = 12;
+            }
+            sheet.getColumn(3 + weeklyDates.length).width = 15; // Ukupno
+
+            // Build Header Row
+            const headerRow = sheet.getRow(1);
+            headerRow.getCell(1).value = 'RB';
+            headerRow.getCell(2).value = 'Ime i Prezime';
+            
+            const daysMap = ['Nedelja', 'Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak', 'Subota'];
+            
+            weeklyDates.forEach((date, i) => {
+                const dateObj = new Date(date + 'T12:00:00');
+                const dayName = daysMap[dateObj.getDay()];
+                const formattedDate = `${date.split('-')[2]}.${date.split('-')[1]}.${date.split('-')[0]}`;
+                headerRow.getCell(3 + i).value = `${dayName}\n${formattedDate}`;
+            });
+            headerRow.getCell(3 + weeklyDates.length).value = 'Ukupno\nPrekovremeno';
+
+            // Style Header Row
+            headerRow.height = 30;
+            headerRow.eachCell({ includeEmpty: true }, (c, colNumber) => {
+                if (colNumber > 3 + weeklyDates.length) return;
+                c.font = { bold: true };
+                c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFEFEF' } };
+                c.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+            });
+
+            // Data Rows
+            let rowIdx = 2;
+            employees.forEach((emp, index) => {
+                const row = sheet.getRow(rowIdx);
+                row.getCell(1).value = index + 1;
+                row.getCell(2).value = emp.name;
+                
+                let totalMins = 0;
+
+                weeklyDates.forEach((date, i) => {
+                    const dayData = emp.days[date];
+                    const cell = row.getCell(3 + i);
+                    
+                    if (dayData && dayData.overtimeApproved && dayData.overtimeMins > 0) {
+                        const h = Math.floor(dayData.overtimeMins / 60);
+                        const m = dayData.overtimeMins % 60;
+                        cell.value = `${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}`;
+                        totalMins += dayData.overtimeMins;
+                    } else {
+                        cell.value = '';
+                    }
+                });
+
+                // Total
+                const totalH = Math.floor(totalMins / 60);
+                const totalM = totalMins % 60;
+                const totalCell = row.getCell(3 + weeklyDates.length);
+                totalCell.value = `${totalH < 10 ? '0'+totalH : totalH}:${totalM < 10 ? '0'+totalM : totalM}`;
+                totalCell.font = { bold: true, color: { argb: 'FFD97706' } }; // Warning orange text for total
+
+                // Style all cells in row
+                row.eachCell({ includeEmpty: true }, (c, colNumber) => {
+                    if (colNumber > 3 + weeklyDates.length) return;
+                    c.alignment = { horizontal: 'center', vertical: 'middle' };
+                    c.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                });
+
+                rowIdx++;
+            });
+
+            // Write and send buffer back
+            const buffer = await workbook.xlsx.writeBuffer();
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename=Nedeljno_Prekovremeno_${weekStart}.xlsx`);
+            res.send(buffer);
+            
+        } catch(error) {
+            console.error('Weekly Excel overtime error:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
 };
