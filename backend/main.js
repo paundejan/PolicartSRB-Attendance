@@ -2,9 +2,18 @@ const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure database exists in the read-write UserData folder
-const userDataPath = app.getPath('userData');
-const targetDbFile = path.join(userDataPath, 'dev.db');
+// Ensure database exists next to the executable (portable mode)
+const appFolder = app.isPackaged
+    ? path.dirname(process.execPath)  // Folder where PolicatSRB.exe lives
+    : __dirname;                       // Dev mode: project root
+
+const targetDbFile = path.join(appFolder, 'data', 'dev.db');
+const dataDir = path.join(appFolder, 'data');
+
+// Create data folder if it doesn't exist
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+}
 
 // Set it globally so Prisma in server.js/scraper.js can read it
 process.env.SQLITE_DB_URL = `file:${targetDbFile}`;
@@ -14,7 +23,7 @@ if (!fs.existsSync(targetDbFile)) {
         const defaultDb = path.join(__dirname, 'prisma', 'dev.db');
         if (fs.existsSync(defaultDb)) {
             fs.copyFileSync(defaultDb, targetDbFile);
-            console.log("Database initialized in userData: ", targetDbFile);
+            console.log("Database initialized in portable data folder: ", targetDbFile);
         }
     } catch (e) {
         console.error("Critical error copying local DB defaults:", e);
